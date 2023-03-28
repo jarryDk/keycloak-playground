@@ -1,0 +1,14 @@
+= Keycloak Playground
+
+== Set admin username/password for dev mode
+
+[source,bash]
+----
+export KEYCLOAK_ADMIN=<username>
+export KEYCLOAK_ADMIN_PASSWORD=<password>
+$KEYCLOAK_HOME/bin/kc.sh start-dev
+----
+
+
+
+
