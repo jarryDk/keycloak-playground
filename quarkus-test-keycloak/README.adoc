@@ -1,0 +1,48 @@
+= Quarkus Test
+
+.Start in dev mode
+[source,bash]
+----
+mvn quarkus:dev
+----
+
+.Build jar
+[source,bash]
+----
+mvn clean package
+----
+
+== Keycloak
+
+[source,bash]
+----
+export access_token=$(\
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+    --user todo-playground-service:todo-playground-service-secret \
+    -H 'content-type: application/x-www-form-urlencoded' \
+    -d 'username=micbn&password=change_me&grant_type=password' | jq --raw-output '.access_token' \
+)
+----
+
+[source,bash]
+----
+echo "access_token : $access_token"
+----
+
+[source,bash]
+----
+curl -v http://localhost:8080/api/users/me \
+  -H "Authorization: Bearer "$access_token
+----
+
+[source,bash]
+----
+curl -v http://localhost:8080/api/admin \
+   -H "Authorization: Bearer "$access_token
+----
+
+[source,bash]
+----
+curl -v http://localhost:8080/api/jwt/users/me \
+  -H "Authorization: Bearer "$access_token | jq
+----

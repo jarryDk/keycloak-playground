@@ -1,14 +1,341 @@
-= Keycloak Playground
+= Keycloak
 
-== Set admin username/password for dev mode
+image::images/keycloak_logo_200px.svg[float="right"]
 
+Open Source Identity and Access Management
+
+Add authentication to applications and secure services with minimum effort.
+No need to deal with storing users or authenticating users.
+
+Keycloak provides user federation, strong authentication, user management, fine-grained authorization, and more.
+
+https://www.keycloak.org/[keycloak.org]
+
+- https://www.keycloak.org/guides#getting-started[Getting started]
+- https://www.keycloak.org/server/containers[Running Keycloak in a container]
+- https://www.keycloak.org/docs/latest/authorization_services/index.html[Authorization Services Guide]
+
+== How this project is setting up Keycloak
+
+NOTE: The two containers `postgres-keycloak` and `keycloak` need to be started in same network
+
+=== Start Postgres
+
+.First time we start Postgres
 [source,bash]
 ----
-export KEYCLOAK_ADMIN=<username>
-export KEYCLOAK_ADMIN_PASSWORD=<password>
-$KEYCLOAK_HOME/bin/kc.sh start-dev
+cd containers
+./start_postgres_for_keycloak.sh
 ----
 
+.Subsequently when we have to start Postgres
+[source,bash]
+----
+podman start postgres-keycloak
+----
+
+=== Start Keycloak
+
+NOTE: We need to have `fullchain.pem` and `privkey.pem` where the script `build_images.sh` can find them
+
+.First time we start Keycloak
+[source,bash]
+----
+cd containers
+./build_images.sh
+./start_postgres_for_keycloak.sh
+----
+
+.Subsequently when we have to start Keycloak
+[source,bash]
+----
+podman start keycloak
+----
+
+== Into to OAuth
+
+- https://fusionauth.io/learn/expert-advice/oauth/modern-guide-to-oauth[The Modern Guide to OAuth]
+- https://oauth.net/2/grant-types/[OAuth 2.0 / Grant Types]
+- https://oauth.net/2/access-tokens/[OAuth 2.0 /Access Tokens]
+- https://oauth.net/id-tokens-vs-access-tokens/[ID Tokens vs Access Tokens]
+
+== Get a Token
+
+.Get .access_token (Password Grant - Client authentication turned off)
+[source,bash]
+----
+export access_token=$(\
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+	-H 'Content-Type: application/x-www-form-urlencoded' \
+	-d 'password=change_me' \
+	-d 'username=micbn' \
+	-d 'client_id=demo-password-grant' \
+	-d 'grant_type=password'
+)
+----
+
+.Get .access_token (Password Grant - Client authentication turned on)
+[source,bash]
+----
+export access_token=$(\
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+    --user todo-playground-service:todo-playground-service-secret \
+    -H 'content-type: application/x-www-form-urlencoded' \
+    -d 'username=micbn&password=change_me&grant_type=password' | jq --raw-output '.access_token' \
+)
+----
+
+.Open in a Browser to do login
+[source,bash]
+----
+https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/auth
+?client_id=demo-authorization-code
+&response_type=code
+&scope=profile
+&redirect_uri=http://localhost:8081/callback&
+&state=fj8o3n7bdy1op5
+----
+
+NOTE: Time for some copy/paste - You need to get the `code` from the url in you browser.
+
+.Get .access_token (Authorization Code Grant)
+[source,bash]
+----
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+	-H 'Content-Type: application/x-www-form-urlencoded' \
+	-d 'grant_type=authorization_code' \
+	-d 'client_id=demo-authorization-code' \
+	-d 'client_secret=IbECWf3EZQEi8HSUkS9BiTYtoQKLCU9B' \
+	-d 'code=8759bef0-1342-4aa6-8088-e087b8528c98.bb547f78-2676-44f3-960a-c99900810cc4.7e7908bb-5447-4aea-9217-07b96a2fb1de' \
+	-d 'redirect_uri=http://localhost:8081/callback'
+----
+
+.Get .access_token (Client Credentials Grant)
+[source,bash]
+----
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+	-H 'Content-Type: application/x-www-form-urlencoded' \
+	-d 'client_id=demo-client-credentials' \
+	-d 'client_secret=GzvczB7hiWSy3ldmxwYahlvTgXg08hwz' \
+	-d 'scope=email' \
+	-d 'grant_type=client_credentials'
+----
+
+.Get .access_token (Client Credentials Grant - parse client_id and client_secret as Basic access authorization)
+[source,bash]
+----
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+	-H 'Content-Type: application/x-www-form-urlencoded' \
+    --user demo-client-credentials:GzvczB7hiWSy3ldmxwYahlvTgXg08hwz \
+	-d 'scope=email' \
+	-d 'grant_type=client_credentials'
+----
+
+.Get token human readable (Client Credentials Grant - parse client_id and client_secret as Basic access authorization)
+----
+jwt-decode $(\
+    curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    --user demo-client-credentials:GzvczB7hiWSy3ldmxwYahlvTgXg08hwz \
+    -d 'scope=email' \
+    -d 'grant_type=client_credentials' | jq --raw-output '.access_token'\
+    )
+----
+
+.Display content of .access_token
+[source,bash]
+----
+echo $access_token | jq -R 'split(".") | .[0],.[1] | @base64d | fromjson'
+----
+
+== Grant types (appsdeveloperblog.com)
+
+=== Authorization Code Grant
+
+[quote]
+You should use this authorization flow only if your application support redirects. For example, if your application is a Web application or a mobile application, then this authorization grant flow is a recommended one to use.
+
+.Request
+[source,bash]
+----
+http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/auth
+?client_id=photo-app-code-flow-client
+&response_type=code
+&state=fj8o3n7bdy1op5
+----
+
+.Response
+[source,bash]
+----
+http://localhost:8081/callback
+?state=fj8o3n7bdy1op5
+&session_state=f109bb89-cd34-4374-b084-c3c1cf2c8a0b
+&code=0aaca7b5-a314-4c07-8212-818cb4b7e8d0.f109bb89-cd34-4374-b084-c3c1cf2c8a0b.1dc15d06-d8b9-4f0f-a042-727eaa6b98f7
+----
+
+.Request (with Optional Request Parameters)
+[source,bash]
+----
+http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/auth
+?client_id=photo-app-code-flow-client
+&response_type=code
+&scope=profile
+&redirect_uri=http://localhost:8081/callback&
+state=fj8o3n7bdy1op5
+----
+
+.Response (with Optional Request Parameters)
+[source,bash]
+----
+http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/auth
+?client_id=photo-app-code-flow-client
+&response_type=code
+&scope=profile
+&redirect_uri=http://localhost:8081/callback&
+state=fj8o3n7bdy1op5
+----
+
+==== Exchanging Authorization Code for Access Token
+
+.Request
+[source,bash]
+----
+curl --location --request POST 'http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=authorization_code' \
+--data-urlencode 'client_id=photo-app-code-flow-client' \
+--data-urlencode 'client_secret=3424193f-4728-4d19-8517-d450d7c6f2f5' \
+--data-urlencode 'code=c081f6ca-ae87-40b6-8138-5afd4162d181.f109bb89-cd34-4374-b084-c3c1cf2c8a0b.1dc15d06-d8b9-4f0f-a042-727eaa6b98f7' \
+--data-urlencode 'redirect_uri=http://localhost:8081/callback'
+----
+
+.Response
+[source,json]
+----
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItNUlsX2I0cUktdWFvaEI3d244UHY3WEM2UEktU3BNbmZCRnlJZUx6QTJNIn0.eyJleHAiOjE1OTIzNDM5NDEsImlhdCI6MTU5MjM0MzY0MSwiYXV0aF90aW1lIjoxNTkyMzQwODA1LCJqdGkiOiJlYjlhNTc2NS1jYmVhLTQ2ZWMtYTk4NS0wOWFkYTM5NTk5YjIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXV0aC9yZWFsbXMvYXBwc2RldmVsb3BlcmJsb2ciLCJzdWIiOiIxZGRlM2ZjMy1jNmRiLTQ5ZmItOWIzZC03OTY0YzVjMDY4N2EiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwaG90by1hcHAtY29kZS1mbG93LWNsaWVudCIsInNlc3Npb25fc3RhdGUiOiJmMTA5YmI4OS1jZDM0LTQzNzQtYjA4NC1jM2MxY2YyYzhhMGIiLCJhY3IiOiIwIiwic2NvcGUiOiJwcm9maWxlIiwibmFtZSI6IkthcmdvcG9sb3YiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJnZXkiLCJmYW1pbHlfbmFtZSI6IkthcmdvcG9sb3YifQ.KHCNF0Rn-I7iFosB3oEaWetRw9lhSkkP0-Ef6iW2GAZuuI-GQtZUBDAD_aEDtLTdUpvGL8MKx8Os0qbUZKJJhBhTAJyz2DycgY--ROc_vLbPtJSll-F68tHT6KgC2etbTjpz4Ira6PaLigkT80zGb6tpnQmm1o7a4IGQ40-faKC4fivdfblypGqgRnniOGXMLGpzO2Ln92w1azjFAyOCIBhe3Nlcofjupi26qNGrJKuwBudzZgZCla9RDWm2MUTqMW65AOUpOmiJCd5E4JxbwOuG6H2tbYI2Z-ajQXzzcodmCAWfWu2oRkMaAuNImph8W9tRrqCQ0wlb55tXnUvEuw",
+    "expires_in": 300,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlYWQyMDZmOS05MzczLTQ1OTAtOGQ4OC03YWNkYmZjYTU5MmMifQ.eyJleHAiOjE1OTIzNDU0NDEsImlhdCI6MTU5MjM0MzY0MSwianRpIjoiOGE2NTdhMDktYTQ3My00OTAyLTk1MjItYWYxMGFkMzUwYzUyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwic3ViIjoiMWRkZTNmYzMtYzZkYi00OWZiLTliM2QtNzk2NGM1YzA2ODdhIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InBob3RvLWFwcC1jb2RlLWZsb3ctY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6ImYxMDliYjg5LWNkMzQtNDM3NC1iMDg0LWMzYzFjZjJjOGEwYiIsInNjb3BlIjoicHJvZmlsZSJ9.WevUHYd7DV3Ft7mFJnM2iLlArotBvLlMfQxlcy0nig8",
+    "token_type": "bearer",
+    "not-before-policy": 0,
+    "session_state": "f109bb89-cd34-4374-b084-c3c1cf2c8a0b",
+    "scope": "profile"
+}
+----
+
+Source : https://www.appsdeveloperblog.com/keycloak-authorization-code-grant-example/[Keycloak: Authorization Code Grant Example]
+
+=== Client Credentials Grant
+
+[quote]
+The Client Credentials Grant flow requires the client application to authenticate with the Authorization Server. To do that, the client application will need to include the client_id and the client_secret values in HTTP Post request for an Access Token.
+
+.Request
+[source,bash]
+----
+curl --location --request POST 'http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'client_id=photo-app-client-credentials' \
+--data-urlencode 'client_secret=91813ee4-0769-4a7f-9dd3-a12f1f67631e' \
+--data-urlencode 'scope=email' \
+--data-urlencode 'grant_type=client_credentials'
+----
+
+.Response
+[source,json]
+----
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItNUlsX2I0cUktdWFvaEI3d244UHY3WEM2UEktU3BNbmZCRnlJZUx6QTJNIn0.eyJleHAiOjE1OTQyMTY0OTQsImlhdCI6MTU5NDIxNjE5NCwianRpIjoiZjVmNTBjMzEtNWIwNC00OWQ2LTljYmMtM2YwMWU5OTg5ZWQxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwic3ViIjoiNTlmODFhMzYtYTIyMC00ZmE4LTlhZWEtMzRlN2JhNjY4OTAxIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoicGhvdG8tYXBwLWNsaWVudC1jcmVkZW50aWFscyIsInNlc3Npb25fc3RhdGUiOiI3NTAyY2YzMS1iMjEwLTQ3NTQtYjkxOS0wN2UxZDg0OTNmYTMiLCJhY3IiOiIxIiwic2NvcGUiOiJlbWFpbCIsImNsaWVudElkIjoicGhvdG8tYXBwLWNsaWVudC1jcmVkZW50aWFscyIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJjbGllbnRBZGRyZXNzIjoiMTI3LjAuMC4xIn0.fQVsLpQJchcofA18FOSr0gtjeo01s9bMFF1ewsI-trrzzNL28QABmm_rsb4-p0iw5fGG3-bEInFe-Owxm9sZbQ_O7je_BVMDrlJEs-bAY5cLIQWVqy3P5xCsyFt-F6y89LAOCUCGI127W18zoUagLAoi5bGCIgxKled-MYRK8MQ-PcZzYCp5FkPFMv6Wd8I5m6TZJ6xK0eG79LVDPqj-s9YGfjY_n64uiT9VneYHG261SisgZ978ZMF-gkjit9CsSTQEW2cBlyeriy133s0E0ycvybLwnHYsGzRs5k8xhgqa3ZYovtZeK2SWARoNSXWQjUCBcndT9teWcZSgQxPIzw",
+    "expires_in": 300,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlYWQyMDZmOS05MzczLTQ1OTAtOGQ4OC03YWNkYmZjYTU5MmMifQ.eyJleHAiOjE1OTQyMTc5OTQsImlhdCI6MTU5NDIxNjE5NCwianRpIjoiMDQ0MDEwMjItY2QwNy00MTczLTkwMjctMTQwMGU4Yjg1MzdlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwic3ViIjoiNTlmODFhMzYtYTIyMC00ZmE4LTlhZWEtMzRlN2JhNjY4OTAxIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InBob3RvLWFwcC1jbGllbnQtY3JlZGVudGlhbHMiLCJzZXNzaW9uX3N0YXRlIjoiNzUwMmNmMzEtYjIxMC00NzU0LWI5MTktMDdlMWQ4NDkzZmEzIiwic2NvcGUiOiJlbWFpbCJ9.9qWVA-pyBp0AZ7BUj2Z_RAlQlDSU15kyvpcwEGfXj1k",
+    "token_type": "bearer",
+    "not-before-policy": 0,
+    "session_state": "7502cf31-b210-4754-b919-07e1d8493fa3",
+    "scope": "email"
+}
+----
+
+Source : https://www.appsdeveloperblog.com/keycloak-client-credentials-grant-example/[Keycloak: Client Credentials Grant Example]
+
+=== Password Grant (Legacy - not part of OAuth 2.1)
+
+[quote]
+The Password Grant flow should only be used if your application does not support redirects. Otherwise, if your application is a Web application or a mobile application and does support redirects, it is recommended to use an Authorization Code grant flow. If your application is a secure mobile application and a user has an absolute trust for this mobile application and is ready to provide it with their username and password, then a Password Grant flow can be used. Although, the latest https://tools.ietf.org/html/draft-ietf-oauth-security-topics-13#section-3.4[OAuth 2.0 Security Best Current Practice] disallows the password grant entirely.
+
+.Request
+[source,bash]
+----
+curl --location --request POST 'http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'password=USER-PASSWORD' \
+--data-urlencode 'username=USER-NAME' \
+--data-urlencode 'client_id=photo-app-client' \
+--data-urlencode 'grant_type=password'
+----
+
+.Response
+[source,json]
+----
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItNUlsX2I0cUktdWFvaEI3d244UHY3WEM2UEktU3BNbmZCRnlJZUx6QTJNIn0.eyJleHAiOjE1OTIyNDg2OTAsImlhdCI6MTU5MjI0ODM5MCwianRpIjoiNTBmZmE5OGYtYjBmMS00MmY1LTljMjEtOTM3MDlkMTE3YjNiIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwiYXVkIjpbInJlYWxtLW1hbmFnZW1lbnQiLCJhY2NvdW50Il0sInN1YiI6IjFkZGUzZmMzLWM2ZGItNDlmYi05YjNkLTc5NjRjNWMwNjg3YSIsInR5cCI6IkJlYXJlciIsImF6cCI6InBob3RvLWFwcC1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNmYxOGNlZjUtZTI5OS00ZWMyLTgwMjAtODhkMmQ5N2EzZDNiIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJVc2VyIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InJlYWxtLW1hbmFnZW1lbnQiOnsicm9sZXMiOlsidmlldy1yZWFsbSIsInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwibWFuYWdlLWlkZW50aXR5LXByb3ZpZGVycyIsImltcGVyc29uYXRpb24iLCJyZWFsbS1hZG1pbiIsImNyZWF0ZS1jbGllbnQiLCJtYW5hZ2UtdXNlcnMiLCJxdWVyeS1yZWFsbXMiLCJ2aWV3LWF1dGhvcml6YXRpb24iLCJxdWVyeS1jbGllbnRzIiwicXVlcnktdXNlcnMiLCJtYW5hZ2UtZXZlbnRzIiwibWFuYWdlLXJlYWxtIiwidmlldy1ldmVudHMiLCJ2aWV3LXVzZXJzIiwidmlldy1jbGllbnRzIiwibWFuYWdlLWF1dGhvcml6YXRpb24iLCJtYW5hZ2UtY2xpZW50cyIsInF1ZXJ5LWdyb3VwcyJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJnZXkifQ.gauVxQ-xKBQO51JdgrUnTSjZt6pKiN1pYzWEmNYXH45pj4sFSt9249mOn6J9X6OpJxkl5H5o2b2PPX9X7ZnLYz4i-mXHuYpNhVlmpbee2xH8i3_RmjcBSJebyjs11T8QrAj41mADNYZXLi_mW7Uu7ecSrUiBHoioaMBJnX7CUPN67Q1ctviCkNqbkrPsZyYFaky0en-smBGMMVmLaIS6xksBnxAZBLcalw4IkU7YVFynT-qGUhwGiGrkcTZwSLCowCZcBK3mAH_otdNqiTlGcGgAdqn0ea092WS0EdzR2bAMddCXM7FsD_HzooouxdvPgMuoxaHPp9rClh7dlX7fNw",
+    "expires_in": 300,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlYWQyMDZmOS05MzczLTQ1OTAtOGQ4OC03YWNkYmZjYTU5MmMifQ.eyJleHAiOjE1OTIyNTAxOTAsImlhdCI6MTU5MjI0ODM5MCwianRpIjoiNzJlNTI1YmMtNDIwMy00MDhiLThhYzAtYzk2ZGNiYTFhOTI2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwic3ViIjoiMWRkZTNmYzMtYzZkYi00OWZiLTliM2QtNzk2NGM1YzA2ODdhIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InBob3RvLWFwcC1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNmYxOGNlZjUtZTI5OS00ZWMyLTgwMjAtODhkMmQ5N2EzZDNiIiwic2NvcGUiOiJlbWFpbCBwcm9maWxlIn0.c5JZg9Y-a1etKmF3uRcnbKKIeAIDe72cz1tPe5IzpRo",
+    "token_type": "bearer",
+    "not-before-policy": 0,
+    "session_state": "6f18cef5-e299-4ec2-8020-88d2d97a3d3b",
+    "scope": "email profile"
+}
+----
+
+Source : https://www.appsdeveloperblog.com/keycloak-requesting-token-with-password-grant/[Keycloak: Requesting Token with Password Grant]
 
 
+=== Refreshing Access Token
+
+[quote]
+The refresh token can be used to refresh an access token, only if the refresh token has not expired yet. If the refresh token has expired, it can no longer be used.
+
+.Request
+[source,bash]
+----
+curl --location --request POST 'http://localhost:8080/auth/realms/appsdeveloperblog/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=refresh_token' \
+--data-urlencode 'client_id=photo-app-code-flow-client' \
+--data-urlencode 'client_secret=3424193f-4728-4d19-8517-d450d7c6f2f5' \
+--data-urlencode 'refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlYWQyMDZmOS05MzczLTQ1OTAtOGQ4OC03YWNkYmZjYTU5MmMifQ.eyJleHAiOjE1OTQ0MDc1NTgsImlhdCI6MTU5NDQwNTc1OCwianRpIjoiY2Y4ZTNlMjctZjE0ZS00OTEzLWFkNjgtYjk4MDlmZWIxY2Q0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwic3ViIjoiMWRkZTNmYzMtYzZkYi00OWZiLTliM2QtNzk2NGM1YzA2ODdhIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InBob3RvLWFwcC1jb2RlLWZsb3ctcmVzdC1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiM2Y4ZWZmMTEtOGNlOC00OTZiLWE0NTQtZDliY2VkYjc1NDcyIiwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSJ9.dbfVSOhVmXiR8e1sRBid9P8yZyD0KgWNLTyd03gZKng'
+----
+
+.Response
+[source,json]
+----
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItNUlsX2I0cUktdWFvaEI3d244UHY3WEM2UEktU3BNbmZCRnlJZUx6QTJNIn0.eyJleHAiOjE1OTQ0MTM4NDgsImlhdCI6MTU5NDQxMzU0OCwiYXV0aF90aW1lIjoxNTk0NDEzNDQ2LCJqdGkiOiI5ZDlkOGQ3NC00MDJhLTQ2NTQtYTMyZC05NjNhNDRjZWI0YWQiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXV0aC9yZWFsbXMvYXBwc2RldmVsb3BlcmJsb2ciLCJzdWIiOiIxZGRlM2ZjMy1jNmRiLTQ5ZmItOWIzZC03OTY0YzVjMDY4N2EiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwaG90by1hcHAtY29kZS1mbG93LXJlc3QtY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjBkMjYzNjYzLTFiMGQtNDU5Mi1iNmIyLTVlZThlNTNhM2Y2MSIsImFjciI6IjEiLCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIn0.MUxk9FUHZ6Xp8PvHPglJwcOO0042KguYF220Sr1QHuSsNh0r6oRMCsojo91XlCKwoSFRK2hytnaAiSqXwu_nRJGrz8Eim_1lGD_W9rEe-xkyP9pOEjZ9phzzsMqG56s0VS88mjA5tIxIahPZ6Fli_aDs6ZRnnrd4_SomRVfs43f_AWdyOOYQR4CU4WMdvtJwqaZ8ZnJLBQSja-NZfroEaIbuc7azt4LX23FH0knxTaFzzrTafQYbH8kDmVm7HB9hIOZTCUTVwIS4-4J8R4deWrLF03um_ND_cgAWfME987fcQZY-oNT2yioLpRTMizhWtEz5Wacd-CMCAXywOfGZxA",
+    "expires_in": 300,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlYWQyMDZmOS05MzczLTQ1OTAtOGQ4OC03YWNkYmZjYTU5MmMifQ.eyJleHAiOjE1OTQ0MTUzNDgsImlhdCI6MTU5NDQxMzU0OCwianRpIjoiM2E1Y2M3OTAtNTBiZS00OWFjLWI2NjktNTNkZDhlMmNkODVkIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2FwcHNkZXZlbG9wZXJibG9nIiwic3ViIjoiMWRkZTNmYzMtYzZkYi00OWZiLTliM2QtNzk2NGM1YzA2ODdhIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InBob3RvLWFwcC1jb2RlLWZsb3ctcmVzdC1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiMGQyNjM2NjMtMWIwZC00NTkyLWI2YjItNWVlOGU1M2EzZjYxIiwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSJ9.VB0_lafyjhf4zMRZ2GG5fL0sP1GpUZU0eUq0sOpBgPU",
+    "token_type": "bearer",
+    "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItNUlsX2I0cUktdWFvaEI3d244UHY3WEM2UEktU3BNbmZCRnlJZUx6QTJNIn0.eyJleHAiOjE1OTQ0MTM4NDgsImlhdCI6MTU5NDQxMzU0OCwiYXV0aF90aW1lIjoxNTk0NDEzNDQ2LCJqdGkiOiJmOGI5ZjVkNy02MDA5LTQyMWMtODUyMS00ZmM3MjRkYjUwMDIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXV0aC9yZWFsbXMvYXBwc2RldmVsb3BlcmJsb2ciLCJhdWQiOiJwaG90by1hcHAtY29kZS1mbG93LXJlc3QtY2xpZW50Iiwic3ViIjoiMWRkZTNmYzMtYzZkYi00OWZiLTliM2QtNzk2NGM1YzA2ODdhIiwidHlwIjoiSUQiLCJhenAiOiJwaG90by1hcHAtY29kZS1mbG93LXJlc3QtY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjBkMjYzNjYzLTFiMGQtNDU5Mi1iNmIyLTVlZThlNTNhM2Y2MSIsImFjciI6IjEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJLYXJnb3BvbG92IiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VyZ2V5IiwiZmFtaWx5X25hbWUiOiJLYXJnb3BvbG92IiwiZW1haWwiOiJzZXJnZXkua2FyZ29wb2xvdkBnbWFpbC5jb20ifQ.R1bUrXZ1kMBaDuCzHGlS0qZbcPn6Rgdx9tGrN8eD5m1glCJ3MbEI8aTpu6CyYiIk7zqLaYjSJ6Grktj0Ht_fyWzdXVmzCtApFcIhRNdhT1VUlFdAHbGr5JmDBvnD7xiV6rSNU78xOfhoRadEsucfypCHsp4QLB67lUtt5dBb2R2JUmoG4WMGfbAwq805XkuPwOg_4AvuUdLNSlId9FbtGOYwDK54YR78gdZIlqyZg7N-otyHF06tgmCQysjCDFWgMFdh5lTZ9JlqYkPO-O5KipxBbCoodTuCMF1-flO330sz6OC6DzPQgIEEjgs-dC4qqGAf3jBhI9792FhcNpNIXQ",
+    "not-before-policy": 1593436696,
+    "session_state": "0d263663-1b0d-4592-b6b2-5ee8e53a3f61",
+    "scope": "openid email profile"
+}
+----
+
+Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAuth 2.0 Refresh Token Example]
+
+=== Link collection (appsdeveloperblog.com)
+
+- https://www.appsdeveloperblog.com/keycloak-starting-standalone-server/[Keycloak: Starting a Standalone Server]
+- https://www.appsdeveloperblog.com/keycloak-create-a-new-oauth-client-application/[Keycloak: Create a New OAuth Client Application]
+- https://www.appsdeveloperblog.com/keycloak-creating-a-new-user/[Keycloak: Creating a New User]
+- https://www.appsdeveloperblog.com/creating-oauth-2-scope-in-keycloak/[Creating OAuth 2 Scope in Keycloak] 
+- https://www.appsdeveloperblog.com/keycloak-requesting-token-with-password-grant/[Keycloak: Requesting Token with Password Grant]
+- https://www.appsdeveloperblog.com/keycloak-authorization-code-grant-example/[Keycloak: Authorization Code Grant Example]
+- https://www.appsdeveloperblog.com/keycloak-client-credentials-grant-example/[Keycloak: Client Credentials Grant Example]
+- https://www.appsdeveloperblog.com/oauth2-resource-server-and-keycloak/[OAuth 2 Resource Server and Keycloak]
+- https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAuth 2.0 Refresh Token Example]
 
