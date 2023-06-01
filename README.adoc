@@ -1,4 +1,4 @@
-= Keycloak
+= Keycloak Playground
 
 image::images/keycloak_logo_200px.svg[float="right"]
 
@@ -402,6 +402,7 @@ Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAut
 - https://docs.criipto.com/verify/e-ids/danish-mitid/[Danish MitID - Documentation]
 - https://www.criipto.com/pricing/authentication[Pricing for Authentication]
 - https://docs.criipto.com/verify/integrations/aspnet-core-v6/[Integrations - ASP.NET Core 6.0]
+    * https://github.com/criipto/samples/tree/master/Verify/dotnet-core-v6.x
 
 == Serviceplatformen
 
@@ -415,3 +416,29 @@ Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAut
 - https://digitaliseringskataloget.dk/files/integration-files/160320231503/Brugervejledning%20til%20Administrationsmodulerne%20for%20leverand%C3%B8rer.pdf[Brugervejledning til Administrationsmodulerne for
 leverandører]
 
+== C# / ASP.NET
+
+- https://github.com/tuxiem/AspNetCore-keycloak[ASP.NET Core - Keycloak authorization guide]
+
+=== Create a web API with ASP.NET Core - TodoApi
+
+.How to create a TodoApi webapp
+----
+dotnet new webapi -o TodoApi
+cd TodoApi
+----
+
+.How to add Microsoft.AspNetCore.Authentication.JwtBearer to the project
+----
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 6.0.13
+----
+
+In Visual Studio Code
+- Press Ctrl+F5 to run the app.
+
+.Links used
+- https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-6.0[Tutorial: Create a web API with ASP.NET Core (6.0)]
+- https://systemweakness.com/security-in-react-and-webapi-in-asp-net-core-c-with-authentification-and-authorization-by-keycloak-1d076777a979[Part One: Security with Keycloak in React and Web Api in ASP.NET Core 5.0 C# with authentication and authorization]
+- https://blog.devgenius.io/security-in-react-and-webapi-in-asp-net-core-c-with-authentification-and-authorization-by-keycloak-89ba14be7e5a[Part Two: Securing a front-end React application]
+- https://blog.devgenius.io/security-in-react-and-webapi-in-asp-net-core-c-with-authentification-and-authorization-by-keycloak-f890d340d093[Part Three: Securing the ASP.NET Core C# REST Web API]
+- https://blog.devgenius.io/part-four-security-in-react-and-webapi-in-asp-net-b6dffd3b7624[Part Four: Calling the protected Web API from the React SPA with the access JWT Token Bearer Authorization]
