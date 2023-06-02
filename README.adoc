@@ -416,9 +416,73 @@ Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAut
 - https://digitaliseringskataloget.dk/files/integration-files/160320231503/Brugervejledning%20til%20Administrationsmodulerne%20for%20leverand%C3%B8rer.pdf[Brugervejledning til Administrationsmodulerne for
 leverandører]
 
+== Keycloak and Azure AD
+
+[quote]
+Lightweight Directory Access Protocol (LDAP) is an application protocol for working with various directory services. Directory services, such as Active Directory, store user and account information, and security information like passwords. The service then allows the information to be shared with other devices on the network. Enterprise applications such as email, customer relationship managers (CRMs), and Human Resources (HR) software can use LDAP to authenticate, access, and find information. +
+  +
+Azure Active Directory (Azure AD) supports this pattern via Azure AD Domain Services (AD DS). It allows organizations that are adopting a cloud-first strategy to modernize their environment by moving off their on-premises LDAP resources to the cloud. The immediate benefits will be: +
+    ✗ Integrated with Azure AD. Additions of users and groups, or attribute changes to their objects are automatically synchronized from your Azure AD tenant to AD DS. Changes to objects in on-premises Active Directory are synchronized to Azure AD, and then to AD DS. +
+    ✗ Simplify operations. Reduces the need to manually keep and patch on-premises infrastructures. +
+    ✗ Reliable. You get managed, highly available services
+
+
+----
+Azure AD Domain Services (AD DS): 
+Performs a one-way synchronization from Azure AD to provide access to a central set of users, groups, and credentials. The AD DS instance is assigned to a virtual network. Applications, services, and VMs in Azure that connect to the virtual network assigned to AD DS can use common AD DS features such as LDAP, domain join, group policy, Kerberos, and NTLM authentication.
+----
+
+Source : https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/auth-ldap[LDAP authentication with Azure Active Directory]
+
+.Keyclaok
+- https://www.keycloak.org/docs/latest/server_admin/index.html#_user-storage-federation[Using external storage (federation)]
+
+.Azure AD as a brokered Identity Provider in KeyCloak
+- https://www.youtube.com/watch?v=LYF-NLHD2uQ[KEYCLOAK & Azure AD - How to configure AAD as an Identity Provider] 
+- https://www.alphabold.com/azure-ad-configuration/[Configure Azure AD as a brokered Identity Provider in KeyCloak]
+- https://www.grebintegration.dk/2021/03/07/microsoft-azure-active-directory-as-keycloak-identity-provider/[Microsoft Azure Active Directory as KeyCloak Identity Provider]
+- https://keycloak.discourse.group/t/groups-from-azure-ad/4876[Groups from Azure AD]
+- https://keycloak.discourse.group/t/getting-groups-from-azure-active-directory-idp/590[Getting groups from Azure Active Directory IDP]
+- https://stackoverflow.com/questions/64334364/get-azure-groups-information-in-keycloak-id-token[Get Azure groups information in keycloak id_token]
+
+.stackoverflow.com
+- https://stackoverflow.com/questions/75206593/what-is-the-best-way-to-federate-users-from-azure-ad-to-keycloak[What is the best way to federate users from Azure AD to Keycloak?]
+- https://stackoverflow.com/questions/66151538/how-to-synchronize-microsoft-users-from-azure-into-the-keycloak[How to synchronize Microsoft users from Azure into the Keycloak]
+
+.Other links
+- https://www.securew2.com/blog/use-azure-ad-ldap[Can I use Azure AD with LDAP? ]
+- https://suryaprakash-pandey.medium.com/azure-ad-idp-with-keycloak-as-sp-1ca933d71388[Azure AD iDP with Keycloak as SP]
+- https://learn.microsoft.com/en-us/answers/questions/1189374/using-azure-ad-as-an-identity-provider-in-keycloak[Using Azure AD as an identity provider in Keycloak-based applications: how can I add missing user data to my client applications?]
+- https://keycloak.discourse.group/t/what-is-the-best-way-to-federate-users-from-azure-ad-to-keycloak/20374/10[What is the best way to federate users from Azure AD to Keycloak?]
+- https://www.grebintegration.dk/2021/03/07/microsoft-azure-active-directory-as-keycloak-identity-provider/
+
 == C# / ASP.NET
 
+.Packages
+- https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.OpenIdConnect#versions-body-tab
+    * https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.openidconnect?view=aspnetcore-6.0
+- https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer#versions-body-tab
+    * https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.jwtbearer?view=aspnetcore-6.0
+- https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols.OpenIdConnect#versions-body-tab
+- https://www.nuget.org/packages/Microsoft.AspNetCore.Identity/#versions-body-tab
+
+.learn.microsoft.com 
+- https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-6.0[Overview of ASP.NET Core authentication]
+- https://learn.microsoft.com/en-us/aspnet/core/security/authentication/claims?view=aspnetcore-6.0[Mapping, customizing, and transforming claims in ASP.NET Core]
+
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/introduction?view=aspnetcore-6.0[Introduction to authorization in ASP.NET Core]
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/secure-data?view=aspnetcore-6.0[Create an ASP.NET Core web app with user data protected by authorization]
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-6.0[Role-based authorization in ASP.NET Core]
+
+.Source code
+https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/security/authentication
+
+.Guids
 - https://github.com/tuxiem/AspNetCore-keycloak[ASP.NET Core - Keycloak authorization guide]
+- https://damienbod.com/2022/05/02/implement-an-openiddict-identity-provider-using-asp-net-core-identity-with-keycloak-federation/[Implement an OpenIddict identity provider using ASP.NET Core Identity with Keycloak federation]
+    * https://github.com/damienbod/AspNetCoreOpeniddict
+- https://medium.com/geekculture/swagger-with-bearer-token-net6-b4ca5a8274b1[Swagger with Bearer Token .Net6] 
+
 
 === Create a web API with ASP.NET Core - TodoApi
 
@@ -436,9 +500,13 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 6.0.1
 In Visual Studio Code
 - Press Ctrl+F5 to run the app.
 
-.Links used
+.Links
 - https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-6.0[Tutorial: Create a web API with ASP.NET Core (6.0)]
 - https://systemweakness.com/security-in-react-and-webapi-in-asp-net-core-c-with-authentification-and-authorization-by-keycloak-1d076777a979[Part One: Security with Keycloak in React and Web Api in ASP.NET Core 5.0 C# with authentication and authorization]
 - https://blog.devgenius.io/security-in-react-and-webapi-in-asp-net-core-c-with-authentification-and-authorization-by-keycloak-89ba14be7e5a[Part Two: Securing a front-end React application]
 - https://blog.devgenius.io/security-in-react-and-webapi-in-asp-net-core-c-with-authentification-and-authorization-by-keycloak-f890d340d093[Part Three: Securing the ASP.NET Core C# REST Web API]
 - https://blog.devgenius.io/part-four-security-in-react-and-webapi-in-asp-net-b6dffd3b7624[Part Four: Calling the protected Web API from the React SPA with the access JWT Token Bearer Authorization]
+- https://procodeguide.com/programming/oauth2-and-openid-connect-in-aspnet-core/[Secure Applications with OAuth2 and OpenID Connect in ASP.NET Core 5 – Complete Guide]
+    * https://github.com/procodeguide/ProCodeGuide.Samples.IdentityServer4[ProCodeGuide.Samples.IdentityServer4]
+- https://procodeguide.com/programming/aspnet-core-identity-roles-authorization/[ASP.NET Core Identity Roles based Authorization]
+    * https://github.com/procodeguide/Samples.Identity.Claims[Samples.Identity.Claims]
