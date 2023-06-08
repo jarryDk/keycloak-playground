@@ -27,20 +27,20 @@ public class JwtUsersResource {
 
         public Set<String> audience;
         public String issuer;
-        public Set<String> claimNames;
+        // public Set<String> claimNames;
         public Set<String> groups;
         public Map realmAccess;
         public Map resourceAccess;
-        public String realmAccessType;
+        // public String realmAccessType;
 
         User(JsonWebToken jwt) {
             this.audience =jwt.getAudience();
             this.issuer = jwt.getIssuer();
-            this.claimNames = jwt.getClaimNames();
+            // this.claimNames = jwt.getClaimNames();
             this.groups = jwt.getGroups();
             this.realmAccess = jwt.getClaim("realm_access");
             this.resourceAccess = jwt.getClaim("resource_access");
-            this.realmAccessType =jwt.getClaim("realm_access").getClass().getCanonicalName();
+            // this.realmAccessType =jwt.getClaim("realm_access").getClass().getCanonicalName();
         }
 
     }

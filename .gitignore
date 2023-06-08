@@ -1,0 +1,5 @@
+.vscode/tasks.json
+.vscode/launch.json
+TodoApi/.vscode/launch.json
+TodoApi/.vscode/tasks.json
+TodoApi/Properties/launchSettings.json
