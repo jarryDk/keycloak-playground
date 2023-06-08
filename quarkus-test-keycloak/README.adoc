@@ -1,19 +1,45 @@
 = Quarkus Test
 
+
+This app can be used to test clients and scopes in Keycloak.
+
+Configure the Quarkus app and spin it up and you are ready to go!
+
+== The app
+
 .Start in dev mode
 [source,bash]
 ----
 mvn quarkus:dev
 ----
 
-.Build jar
-[source,bash]
+Open the app in a browser via https://todo.jarry.dk:8443[todo.jarry.dk:8443] or http://localhost:8080[localhost:8080].
+
+=== Configuration
+
+The file link:src/resources/application.properties contains the configuration for the Quarkus app.
+
+.application.properties
 ----
-mvn clean package
+quarkus.oidc.auth-server-url=https://keycloak.jarry.dk:8543/realms/playground
+quarkus.oidc.client-id=todo-playground-service
+quarkus.oidc.credentials.secret=todo-playground-service-secret
+quarkus.http.ssl.certificate.files=/home/micbn/certs/todo.jarry.dk/fullchain.pem
+quarkus.http.ssl.certificate.key-files=/home/micbn/certs/todo.jarry.dk/privkey.pem
 ----
 
 == Keycloak
 
+Import the client in link:todo-playground-service.json[] into Keycloak in the realm `playground`.
+
+The client `todo-playground-service` have
+
+- Client authentication `Off`
+- Authentication flow enable is `Standard flow` and `Direct access grants`
+
+NOTE: As Client authentication is `Off` the password sendt in `Password Grant` is ignored by Keycloak.
+
+.Use Password Grant to get a Token
 [source,bash]
 ----
 export access_token=$(\
@@ -24,23 +50,20 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
 )
 ----
 
+.Dispaly content of access_token
 [source,bash]
 ----
-echo "access_token : $access_token"
+echo $access_token | jq -R 'split(".") | .[0],.[1] | @base64d | fromjson'
 ----
 
+.Use access_token to get data from io.quarkus.security.identity.SecurityIdentity
 [source,bash]
 ----
-curl -v http://localhost:8080/api/users/me \
+curl -v http://localhost:8080/api/si/users/me \
   -H "Authorization: Bearer "$access_token
 ----
 
-[source,bash]
-----
-curl -v http://localhost:8080/api/admin \
-   -H "Authorization: Bearer "$access_token
-----
-
+.Use access_token to get data from org.eclipse.microprofile.jwt.JsonWebToken
 [source,bash]
 ----
 curl -v http://localhost:8080/api/jwt/users/me \
