@@ -5,7 +5,11 @@ var keycloak = new Keycloak({
     "clientId": "todo-playground-service"
 });
 
-var serviceUrl = 'https://todo.jarry.dk:8443/api/'
+var url = window.location.href
+var urlArr = url.split("/");
+var urlResult = urlArr[0] + "//" + urlArr[2]
+var serviceUrl = urlResult + '/api/'
+console.info('serviceUrl', serviceUrl);
 
 function notAuthenticated() {
     document.getElementById('not-authenticated').style.display = 'block';
@@ -15,7 +19,20 @@ function notAuthenticated() {
 function authenticated() {
     document.getElementById('not-authenticated').style.display = 'none';
     document.getElementById('authenticated').style.display = 'block';
-    document.getElementById('message').innerHTML = 'User: ' + keycloak.tokenParsed['preferred_username'];
+    document.getElementById('user').innerHTML = 'User: ' + keycloak.tokenParsed['preferred_username'];
+}
+
+function updateTokensDisplay(){
+    if (keycloak.authenticated) {
+        var idTokenObject = JSON.stringify(parseJwt(keycloak.idToken), null, 4);
+        var tokenObject = JSON.stringify(parseJwt(keycloak.token), null, 4);
+
+        document.getElementById('idTokenBase64').innerHTML = 'ID Token: <code>' + keycloak.idToken + '</code>';
+        document.getElementById('idToken').innerHTML = 'ID Token HR: <pre class="preJsonTxt">' +idTokenObject + '</pre>';
+
+        document.getElementById('tokenBase64').innerHTML = 'Token: <code>' + keycloak.token + '</code>';
+        document.getElementById('token').innerHTML = 'Token HR: <pre class="preJsonTxt">' + tokenObject + '</pre>';
+    }
 }
 
 function request(endpoint) {
@@ -25,16 +42,7 @@ function request(endpoint) {
         req.open('GET', serviceUrl + endpoint + '/users/me' , true);
 
         if (keycloak.authenticated) {
-            console.log('keycloak', keycloak);
-            var idTokenObject = JSON.stringify(parseJwt(keycloak.idToken), null, 4);
-            var tokenObject = JSON.stringify(parseJwt(keycloak.token), null, 4);
-
-            document.getElementById('idTokenBase64').innerHTML = 'ID Token: <code>' + keycloak.idToken + '</code>';
-            document.getElementById('idToken').innerHTML = 'ID Token HR: <pre class="preJsonTxt">' +idTokenObject + '</pre>';
-
-            document.getElementById('tokenBase64').innerHTML = 'Token: <code>' + keycloak.token + '</code>';
-            document.getElementById('token').innerHTML = 'Token HR: <pre class="preJsonTxt">' + tokenObject + '</pre>';
-
+            updateTokensDisplay();
             req.setRequestHeader('Authorization', 'Bearer ' + keycloak.token);
         }
 
@@ -60,20 +68,42 @@ function request(endpoint) {
     }
 }
 
-window.onload = function () {
+function initKeycloak(){
     keycloak.init({
-            onLoad: 'check-sso',
-            checkLoginIframeInterval: 1,
-            scope :"openid email profile phone rl"
-        }).then(function () {
+        onLoad: 'check-sso',
+        checkLoginIframeInterval: 1,
+        scope : requestedScopes
+    }).then(function () {
         if (keycloak.authenticated) {
             authenticated();
         } else {
             notAuthenticated();
         }
-
         document.body.style.display = 'block';
     });
+}
+
+var requestedScopes = "openid email profile phone rl";
+window.onload = function () {
+
+    var cookieScope = getCookie('scope');
+    if (cookieScope != ''){
+        requestedScopes = cookieScope;
+    }
+    console.info("requestedScopes", requestedScopes);
+    document.getElementById('inputScope').value = requestedScopes;
+
+    const scopeForm = document.getElementById("scopeForm");
+    scopeForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("Scope updated....");
+        requestedScopes = document.getElementById('inputScope').value;
+        setCookie('scope', requestedScopes, 10);
+        initKeycloak();
+        keycloak.login();
+    });
+
+    initKeycloak();
 }
 
 keycloak.onAuthLogout = notAuthenticated;
@@ -85,4 +115,27 @@ function parseJwt (token) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
     return JSON.parse(jsonPayload);
+}
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
 }
