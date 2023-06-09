@@ -83,18 +83,20 @@ Sources for quotes : https://oauth.net/2/access-tokens/[OAuth 2.0 / Access Token
 - https://oauth.net/id-tokens-vs-access-tokens/[ID Tokens vs Access Tokens]
 
 
+https://alexbilbie.github.io/guide-to-oauth-2-grants/#which-oauth-20-grant-should-i-use[Which OAuth 2.0 grant should I use?] can help you pick a Grant Type, but remember `Implicit Grant` and `Password Grant` is Legacy.
+
 === auth0.com on ID Token and Access Token
 
-https://auth0.com/blog/id-token-access-token-what-is-the-difference/[auth0.com :: ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
+https://auth0.com/blog/id-token-access-token-what-is-the-difference/[auth0.com ~ ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
 
-https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube :: ID Token and Access Token: What's the Difference?]
+https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube ~ ID Token and Access Token: What's the Difference?]
 
 video::vVM1Tpu9QB4[youtube, width=640, height=480]
 
 image::id-token-vs-access-token.jpg[id-token-vs-access-token]
 
-- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com :: ID Tokens]
-- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com :: Access Tokens]
+- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com ~ ID Tokens]
+- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com ~ Access Tokens]
 
 
 == Get a Token
@@ -246,7 +248,6 @@ curl -X POST \
 
 ----
 
-
 === Password Grant
 
 [quote]
@@ -275,7 +276,6 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
     -d 'username=micbn&password=change_me&grant_type=password' | jq --raw-output '.access_token' \
 )
 ----
-
 
 == Grant types (appsdeveloperblog.com)
 
@@ -525,12 +525,23 @@ Source : https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/a
 - https://www.keycloak.org/docs/latest/server_admin/index.html#_user-storage-federation[Using external storage (federation)]
 
 .Azure AD as a brokered Identity Provider in KeyCloak
-- https://www.youtube.com/watch?v=LYF-NLHD2uQ[KEYCLOAK & Azure AD - How to configure AAD as an Identity Provider] 
+- https://www.youtube.com/watch?v=LYF-NLHD2uQ[KEYCLOAK & Azure AD - How to configure AAD as an Identity Provider]
 - https://www.alphabold.com/azure-ad-configuration/[Configure Azure AD as a brokered Identity Provider in KeyCloak]
 - https://www.grebintegration.dk/2021/03/07/microsoft-azure-active-directory-as-keycloak-identity-provider/[Microsoft Azure Active Directory as KeyCloak Identity Provider]
 - https://keycloak.discourse.group/t/groups-from-azure-ad/4876[Groups from Azure AD]
 - https://keycloak.discourse.group/t/getting-groups-from-azure-active-directory-idp/590[Getting groups from Azure Active Directory IDP]
 - https://stackoverflow.com/questions/64334364/get-azure-groups-information-in-keycloak-id-token[Get Azure groups information in keycloak id_token]
+
+.SSO (SAML 2.0)
+- https://learn.microsoft.com/en-us/azure/active-directory/hybrid/connect/how-to-connect-fed-saml-idp[Use a SAML 2.0 Identity Provider (IdP) for Single Sign On]
+- https://learn.microsoft.com/en-us/answers/questions/1189374/using-azure-ad-as-an-identity-provider-in-keycloak[Using Azure AD as an identity provider in Keycloak-based applications: how can I add missing user data to my client applications?]
+
+.ADFS
+- https://www.alphabold.com/ms-adfs-configuration-in-keycloak/[Configure MS ADFS as a brokered Identity Provider in KeyCloak]
+- https://www.redhat.com/sysadmin/active-directory-sso-authentication[How to integrate Active Directory Federation Services (ADFS) authentication with Red Hat SSO using SAML]
+- https://www.keycloak.org/2017/03/how-to-setup-ms-ad-fs-30-as-brokered[How to Setup MS AD FS 3.0 as Brokered Identity Provider in Keycloak]
+- https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/deployment/how-to-connect-fed-azure-adfs[Deploying Active Directory Federation Services in Azure]
+- https://learn.microsoft.com/en-us/azure/active-directory/hybrid/connect/whatis-fed[What is federation with Azure AD?]
 
 .stackoverflow.com
 - https://stackoverflow.com/questions/75206593/what-is-the-best-way-to-federate-users-from-azure-ad-to-keycloak[What is the best way to federate users from Azure AD to Keycloak?]
