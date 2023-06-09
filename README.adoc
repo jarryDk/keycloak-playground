@@ -87,6 +87,7 @@ Sources for quotes : https://oauth.net/2/access-tokens/[OAuth 2.0 / Access Token
 
 https://auth0.com/blog/id-token-access-token-what-is-the-difference/[ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
 
+https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube -->> ID Token and Access Token: What's the Difference?]
 
 video::vVM1Tpu9QB4[youtube, width=640, height=480]
 
