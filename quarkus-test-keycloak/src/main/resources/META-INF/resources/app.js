@@ -11,15 +11,19 @@ var urlResult = urlArr[0] + "//" + urlArr[2]
 var serviceUrl = urlResult + '/api/'
 console.info('serviceUrl', serviceUrl);
 
+var requestedScopes = "openid email profile phone rl";
+
 function notAuthenticated() {
     document.getElementById('not-authenticated').style.display = 'block';
     document.getElementById('authenticated').style.display = 'none';
 }
+keycloak.onAuthLogout = notAuthenticated;
 
 function authenticated() {
     document.getElementById('not-authenticated').style.display = 'none';
     document.getElementById('authenticated').style.display = 'block';
-    document.getElementById('user').innerHTML = 'User: ' + keycloak.tokenParsed['preferred_username'];
+    document.getElementById('user').value = keycloak.tokenParsed['preferred_username'];
+    updateTokensDisplay();
 }
 
 function updateTokensDisplay(){
@@ -27,11 +31,11 @@ function updateTokensDisplay(){
         var idTokenObject = JSON.stringify(parseJwt(keycloak.idToken), null, 4);
         var tokenObject = JSON.stringify(parseJwt(keycloak.token), null, 4);
 
-        document.getElementById('idTokenBase64').innerHTML = 'ID Token: <code>' + keycloak.idToken + '</code>';
-        document.getElementById('idToken').innerHTML = 'ID Token HR: <pre class="preJsonTxt">' +idTokenObject + '</pre>';
+        document.getElementById('idToken').innerHTML =  '<pre class="preJsonTxt">' +idTokenObject + '</pre>';
+        document.getElementById('idTokenBase64').innerHTML = '<code>' + keycloak.idToken + '</code>';
 
-        document.getElementById('tokenBase64').innerHTML = 'Token: <code>' + keycloak.token + '</code>';
-        document.getElementById('token').innerHTML = 'Token HR: <pre class="preJsonTxt">' + tokenObject + '</pre>';
+        document.getElementById('tokenBase64').innerHTML = '<code>' + keycloak.token + '</code>';
+        document.getElementById('token').innerHTML = '<pre class="preJsonTxt">' + tokenObject + '</pre>';
     }
 }
 
@@ -42,14 +46,14 @@ function request(endpoint) {
         req.open('GET', serviceUrl + endpoint + '/users/me' , true);
 
         if (keycloak.authenticated) {
-            updateTokensDisplay();
             req.setRequestHeader('Authorization', 'Bearer ' + keycloak.token);
         }
 
         req.onreadystatechange = function () {
             if (req.readyState == 4) {
                 if (req.status == 200) {
-                    payload.innerHTML = 'Payload: <pre class="preJsonTxt">' + JSON.stringify(JSON.parse(req.responseText+""), null, 4) + '</pre>';
+                    var payloadObject = JSON.stringify(JSON.parse(req.responseText+""), null, 4);
+                    payload.innerHTML = '<pre class="preJsonTxt">' + payloadObject + '</pre>';
                 } else if (req.status == 0) {
                     payload.innerHTML = '<span class="error">Request failed</span>';
                 } else {
@@ -69,6 +73,7 @@ function request(endpoint) {
 }
 
 function initKeycloak(){
+    console.info("requestedScopes", requestedScopes);
     keycloak.init({
         onLoad: 'check-sso',
         checkLoginIframeInterval: 1,
@@ -83,16 +88,18 @@ function initKeycloak(){
     });
 }
 
-var requestedScopes = "openid email profile phone rl";
+
 window.onload = function () {
 
     var cookieScope = getCookie('scope');
     if (cookieScope != ''){
         requestedScopes = cookieScope;
     }
-    console.info("requestedScopes", requestedScopes);
     document.getElementById('inputScope').value = requestedScopes;
 
+    /**
+     * Update tokens after scope have been updated
+     */
     const scopeForm = document.getElementById("scopeForm");
     scopeForm.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -106,9 +113,9 @@ window.onload = function () {
     initKeycloak();
 }
 
-keycloak.onAuthLogout = notAuthenticated;
 
-function parseJwt (token) {
+
+function parseJwt(token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {

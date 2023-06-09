@@ -85,7 +85,15 @@ Sources for quotes : https://oauth.net/2/access-tokens/[OAuth 2.0 / Access Token
 
 https://alexbilbie.github.io/guide-to-oauth-2-grants/#which-oauth-20-grant-should-i-use[Which OAuth 2.0 grant should I use?] can help you pick a Grant Type, but remember `Implicit Grant` and `Password Grant` is Legacy.
 
-=== auth0.com on ID Token and Access Token
+=== auth0.com on ID Token, Access Token and Scope
+
+- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com ~ ID Tokens]
+- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com ~ Access Tokens]
+- https://auth0.com/docs/get-started/apis/scopes[auth0.com ~ Scopes]
+    * https://auth0.com/docs/get-started/apis/scopes/api-scopes[API Scopes]
+    * https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes[OpenID Connect Scopes]
+    * https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims[Sample Use Cases: Scopes and Claims]
+
 
 https://auth0.com/blog/id-token-access-token-what-is-the-difference/[auth0.com ~ ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
 
@@ -95,8 +103,6 @@ video::vVM1Tpu9QB4[youtube, width=640, height=480]
 
 image::id-token-vs-access-token.jpg[id-token-vs-access-token]
 
-- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com ~ ID Tokens]
-- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com ~ Access Tokens]
 
 
 == Get a Token
