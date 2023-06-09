@@ -85,13 +85,16 @@ Sources for quotes : https://oauth.net/2/access-tokens/[OAuth 2.0 / Access Token
 
 === auth0.com on ID Token and Access Token
 
-https://auth0.com/blog/id-token-access-token-what-is-the-difference/[ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
+https://auth0.com/blog/id-token-access-token-what-is-the-difference/[auth0.com :: ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
 
-https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube -->> ID Token and Access Token: What's the Difference?]
+https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube :: ID Token and Access Token: What's the Difference?]
 
 video::vVM1Tpu9QB4[youtube, width=640, height=480]
 
 image::id-token-vs-access-token.jpg[id-token-vs-access-token]
+
+- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com :: ID Tokens]
+- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com :: Access Tokens]
 
 
 == Get a Token
@@ -172,6 +175,78 @@ jwt-decode $(\
     )
 ----
 
+=== Device Authorization Grant
+
+[quote]
+ The OAuth 2.0 device authorization grant is designed for Internet-
+   connected devices that either lack a browser to perform a user-agent-
+   based authorization or are input constrained to the extent that
+   requiring the user to input text in order to authenticate during the
+   authorization flow is impractical.  It enables OAuth clients on such
+   devices (like smart TVs, media consoles, digital picture frames, and
+   printers) to obtain user authorization to access protected resources
+   by using a user agent on a separate device.
+
+- http://www.keycloak.org/keycloak-community/specifications/[keycloak-community / Specifications]
+- https://github.com/keycloak/keycloak-community/blob/main/design/oauth2-device-authorization-grant.md[OAuth 2.0 Device Authorization Grant]
+- https://thomaslevesque.com/2020/03/28/using-the-oauth-2-0-device-flow-to-authenticate-users-in-desktop-apps/[Using the OAuth 2.0 device flow to authenticate users in desktop apps]
+- https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code[Microsoft identity platform and the OAuth 2.0 device authorization grant flow]
+- https://www.oauth.com/oauth2-servers/device-flow/token-request/[Token Request]
+- https://datatracker.ietf.org/doc/html/rfc8628[OAuth 2.0 Device Authorization Grant]
+
+.Request init - Client authentication on
+[source,bash]
+----
+curl -X POST \
+    --user demo-device-authorization-grant:FmTgJmFPKGHUy31UxtyrC17mQFh9a7OQ \
+    -d 'scope=email rl' \
+    https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/auth/device | jq
+----
+
+NOTE: Scope is set to `email rl`
+
+.Response - init
+[source,json]
+----
+{
+  "device_code": "zMIVwHfMRUAfR_8aAz0L_evw_rG0t2auAzT56mU76JI",
+  "user_code": "IHQH-OYIU",
+  "verification_uri": "https://keycloak.jarry.dk:8543/realms/playground/device",
+  "verification_uri_complete": "https://keycloak.jarry.dk:8543/realms/playground/device?user_code=IHQH-OYIU",
+  "expires_in": 600,
+  "interval": 5
+}
+----
+
+Open the content of `verification_uri_complet` or open the content of `verification_uri` and use `user_code` in a browser  - accept all. Now you can get the `Token` based on the `device_code`. 
+
+.Request get token - Client authentication on
+[source,bash]
+----
+curl -X POST \
+    --user demo-device-authorization-grant:FmTgJmFPKGHUy31UxtyrC17mQFh9a7OQ \
+    -d "device_code=nTFVlUHj9fk6oy2onZe9kbcd3D_RkQJjr-w8Rk1KcSY" \
+    -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
+    https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token | jq
+----
+
+.Response - get token
+[source,json]
+----
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJyUVFxZlQ3TVZEYTZrQUxRVVF3SjI2WlN4VzdDa05HRF9kTHJHaUdidmk0In0.eyJleHAiOjE2ODYyOTYyMTQsImlhdCI6MTY4NjI5NTkxNCwiYXV0aF90aW1lIjoxNjg2Mjk1MjgxLCJqdGkiOiJkMDUzOTZhNy1hMDFiLTQxZDQtYTMwMC1iMzhlYWQ0MzNlNDgiLCJpc3MiOiJodHRwczovL2tleWNsb2FrLmphcnJ5LmRrOjg1NDMvcmVhbG1zL3BsYXlncm91bmQiLCJhdWQiOlsia29ydHZpc2VyIiwiZ2Vvc2VydmVyLWNsaWVudCIsImFjY291bnQiXSwic3ViIjoiMDk3OWJiYmItMjZmOC00ZjAzLTg5MGYtOTRlOWUzNTk4NDljIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZGVtby1kZXZpY2UtYXV0aG9yaXphdGlvbi1ncmFudCIsInNlc3Npb25fc3RhdGUiOiIxNjEwZjA2Ni03MjExLTRjNTQtYTM4Ny04ZGY3ZTUxYjhiODMiLCJhY3IiOiIwIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXBsYXlncm91bmQiLCJvZmZsaW5lX2FjY2VzcyIsImFkbWluIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJrb3J0dmlzZXIiOnsicm9sZXMiOlsicmVhZCIsImFkbWluIl19LCJnZW9zZXJ2ZXItY2xpZW50Ijp7InJvbGVzIjpbIkFETUlOSVNUUkFUT1IiLCJBRE1JTiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIHJsIiwic2lkIjoiMTYxMGYwNjYtNzIxMS00YzU0LWEzODctOGRmN2U1MWI4YjgzIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInJvbGVzIjp7ImtvcnR2aXNlciI6WyJyZWFkIiwiYWRtaW4iXSwiZ2Vvc2VydmVyLWNsaWVudCI6WyJBRE1JTklTVFJBVE9SIiwiQURNSU4iXSwiYWNjb3VudCI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19LCJuYW1lIjoiTWljaGFlbCBCb3JuaG9sZHQgTmllbHNlbiIsInByZWZlcnJlZF91c2VybmFtZSI6Im1pY2JuIiwiZ2l2ZW5fbmFtZSI6Ik1pY2hhZWwgQm9ybmhvbGR0IiwiZmFtaWx5X25hbWUiOiJOaWVsc2VuIiwiZW1haWwiOiJtaWNibkByZWRwaWxsLWxpbnByby5jb20ifQ.dJRl2TiW-uuKCaZmcNKJ8n133gKngVBVXsOfWWQZ5vct5CPkIrLxCbZ35s7mfDc_LxMJeMmbSG2FTN9-VgQ7qPlF2B2ne8rqfGMKfO2qkTOVB_TmHA9lMhjn_Mst8tBE91SOi5jBpl4BSI1nNnWHwSvid_hbL86X-ynjsubDnYuXxtqi2oo98VIYOJJg6crmIUmFl_4v6aR_d5k8ZBQ2dRenTqI7LWkcnZ58Eidh3PXdlxXux5zleV1w8Z7VBCaR-PTvtQqtXIqKT_U_p3qIIoF0LktWbaMPGc0E1rb-L-sNRKBD3xPviX3qQa-fnWgPeWDLpdXE67JwDDU8-N8zWQ",
+  "expires_in": 300,
+  "refresh_expires_in": 1800,
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJiZTZmOTJhYS01Y2EwLTQzMjEtYTE0NS0wNjJjYjFhZTQxYzIifQ.eyJleHAiOjE2ODYyOTc3MTQsImlhdCI6MTY4NjI5NTkxNCwianRpIjoiN2ExODhkZDktNWYyMi00ZDhlLWE0YzAtNmNmZWMyMjU1YjM5IiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5qYXJyeS5kazo4NTQzL3JlYWxtcy9wbGF5Z3JvdW5kIiwiYXVkIjoiaHR0cHM6Ly9rZXljbG9hay5qYXJyeS5kazo4NTQzL3JlYWxtcy9wbGF5Z3JvdW5kIiwic3ViIjoiMDk3OWJiYmItMjZmOC00ZjAzLTg5MGYtOTRlOWUzNTk4NDljIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6ImRlbW8tZGV2aWNlLWF1dGhvcml6YXRpb24tZ3JhbnQiLCJzZXNzaW9uX3N0YXRlIjoiMTYxMGYwNjYtNzIxMS00YzU0LWEzODctOGRmN2U1MWI4YjgzIiwic2NvcGUiOiJlbWFpbCBwcm9maWxlIHJsIiwic2lkIjoiMTYxMGYwNjYtNzIxMS00YzU0LWEzODctOGRmN2U1MWI4YjgzIn0.exk6pHfu-NXZg8djqa1qE2q_DmZ-Yq1bmUtb0U-u5Zc",
+  "token_type": "Bearer",
+  "not-before-policy": 0,
+  "session_state": "1610f066-7211-4c54-a387-8df7e51b8b83",
+  "scope": "email profile rl"
+}
+
+----
+
+
 === Password Grant
 
 [quote]
@@ -200,6 +275,7 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
     -d 'username=micbn&password=change_me&grant_type=password' | jq --raw-output '.access_token' \
 )
 ----
+
 
 == Grant types (appsdeveloperblog.com)
 
@@ -439,7 +515,7 @@ Azure Active Directory (Azure AD) supports this pattern via Azure AD Domain Serv
 
 
 ----
-Azure AD Domain Services (AD DS): 
+Azure AD Domain Services (AD DS):
 Performs a one-way synchronization from Azure AD to provide access to a central set of users, groups, and credentials. The AD DS instance is assigned to a virtual network. Applications, services, and VMs in Azure that connect to the virtual network assigned to AD DS can use common AD DS features such as LDAP, domain join, group policy, Kerberos, and NTLM authentication.
 ----
 
