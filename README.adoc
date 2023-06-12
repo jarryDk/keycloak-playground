@@ -508,6 +508,22 @@ Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAut
 - https://digitaliseringskataloget.dk/l%C3%B8sninger/administrationsmodul[Fælleskommunalt Administrationsmodul]
 - https://digitaliseringskataloget.dk/files/integration-files/160320231503/Brugervejledning%20til%20Administrationsmodulerne%20for%20leverand%C3%B8rer.pdf[Brugervejledning til Administrationsmodulerne for
 leverandører]
+- https://digitaliseringskataloget.dk/files/2022-08/Fremtidens%20infrastruktur%20er%20%C3%A5ben-Infrastrukturdagen2022.pdf[FREMTIDENS INFRASTRUKTUR ER ÅBEN / Kommunernes Data- og Infrastrukturdag 2022]
+- https://digitaliseringskataloget.dk/l%C3%B8sninger/adgangsstyring-brugere[Adgangsstyring for brugere]
+    * https://digitaliseringskataloget.dk/files/integration-files/031120201924/Vejledning%20til%20adgangsstyring%20for%20brugere.pdf[Vejledning til adgangsstyring for brugere]
+    * https://digitaliseringskataloget.dk/files/integration-files/170820211628/Kom%20godt%20i%20gang%20-%20Tilslut%20Brugervendt%20System.pdf[Kom godt i gang - Tilslut Brugervendt System]
+    * https://digitaliseringskataloget.dk/files/integration-files/191220221055/Vejledning%20til%20Ops%C3%A6tning%20af%20Identity%20Provider.pdf[Vejledning til Opsætning af Identity Provider]
+
+.github.com
+ - https://github.com/Serviceplatformen
+ - https://github.com/digst
+
+ .For SAML mapping - KeyCloak
+ - https://lists.jboss.org/pipermail/keycloak-user/2017-April/010289.html
+    * https://lists.jboss.org/archives/search?q=SAML+attribute+mapper+with+processing
+ - https://viden.stil.dk/display/OFFSKOLELOGIN/Tilslut+tjeneste
+ - https://viden.stil.dk/display/OFFSKOLELOGIN/Implementering+af+eksempel+tjeneste
+ - https://docplayer.net/16926163-Oiosaml-2-0-toolkits-test-results-may-2009.html
 
 == Keycloak and Azure AD
 
