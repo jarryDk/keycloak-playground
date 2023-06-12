@@ -518,12 +518,13 @@ leverandører]
  - https://github.com/Serviceplatformen
  - https://github.com/digst
 
- .For SAML mapping - KeyCloak
+.For SAML mapping - KeyCloak
  - https://lists.jboss.org/pipermail/keycloak-user/2017-April/010289.html
     * https://lists.jboss.org/archives/search?q=SAML+attribute+mapper+with+processing
  - https://viden.stil.dk/display/OFFSKOLELOGIN/Tilslut+tjeneste
  - https://viden.stil.dk/display/OFFSKOLELOGIN/Implementering+af+eksempel+tjeneste
  - https://docplayer.net/16926163-Oiosaml-2-0-toolkits-test-results-may-2009.html
+ - https://www.samltool.com/decode.php
 
 == Keycloak and Azure AD
 
