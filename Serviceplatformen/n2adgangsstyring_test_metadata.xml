@@ -1,0 +1,112 @@
+<EntityDescriptor ID="_49b2c24d-4ac1-407f-b519-b540b64e1b64"
+    entityID="https://saml.n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime"
+    xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+            <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" />
+            <Reference URI="#_49b2c24d-4ac1-407f-b519-b540b64e1b64">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                <DigestValue>f3OY6wtWkzOQC2w1wFninxW/rnOagc17vPyAGphBIpI=</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            W/H9CyBhWf35cAXaIZrOlCB+FbgX7jUTHsrxFpx3O7W7rpJxsZ94i8f1gBxtwkqpRoSROv5KKPPJKJXUKY38wdoFCmruNIaZsr33fYpriTUv271nokJr5epK6IE+wyPd05Mor7PHDJwSZY3dddQGXMMJ3PwMsSgsnpJI9IDxBH1xPc76+SAJj3DGuIPtjrDyhbt5IQ6avaZ/WtHBRUaZevsGY3gPFBioc/8WTVZrZ1cCNfHid2jDQoC+r6uvuxv2H7vWZU/+fuKgeCjEq1iVIAwd6QGHDU5tkZ3DZ3+a5L0WuoCz1ybmz6b8cr7/8lNYMVQIiYnaQ9bC/ZEAwHJP9w==</SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>
+                    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</X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </Signature>
+    <IDPSSODescriptor WantAuthnRequestsSigned="true"
+        protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <KeyDescriptor use="signing">
+            <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <X509Data>
+                    <X509Certificate>
+                        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</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">
+            <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <X509Data>
+                    <X509Certificate>
+                        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</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </KeyDescriptor>
+        <Extensions>
+            <EntityAttributes xmlns="urn:oasis:names:tc:SAML:metadata:attribute">
+                <Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                    Name="urn:oasis:names:tc:SAML:attribute:assurance-certification">
+                    <AttributeValue>urn:dk:gov:saml:attribute:AssuranceLevel:3</AttributeValue>
+                </Attribute>
+                <Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                    Name="urn:oasis:names:tc:SAML:attribute:assurance-certification">
+                    <AttributeValue>https://data.gov.dk/concept/core/nsis/loa/Substantial</AttributeValue>
+                </Attribute>
+                <Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                    Name="urn:oasis:names:tc:SAML:attribute:assurance-certification">
+                    <AttributeValue>urn:dk:gov:saml:attribute:AssuranceLevel:1</AttributeValue>
+                </Attribute>
+            </EntityAttributes>
+        </Extensions>
+        <ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/services/artifact/saml2/soap"
+            index="0" isDefault="true" />
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/issue.idp"
+            ResponseLocation="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/signoff.idp" />
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/issue.idp"
+            ResponseLocation="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/signoff.idp" />
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/artifact.idp"
+            ResponseLocation="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/artifact.idp" />
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</NameIDFormat>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/issue.idp" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/issue.idp" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/artifact.idp" />
+        <Attribute Name="http://sts.safewhere.com/certificate"
+            FriendlyName="STS Certificate Thumbprint" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
+        <Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+            FriendlyName="Name" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
+        <Attribute Name="http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            FriendlyName="Access to Identify*Admin" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+            <AttributeValue>ClaimAdmin</AttributeValue>
+            <AttributeValue>ConnectionAdmin</AttributeValue>
+            <AttributeValue>UserAdmin</AttributeValue>
+            <AttributeValue>OrganizationAdmin</AttributeValue>
+            <AttributeValue>GroupAdmin</AttributeValue>
+            <AttributeValue>SystemSetupAdmin</AttributeValue>
+            <AttributeValue>ClaimTransformationAdmin</AttributeValue>
+            <AttributeValue>Identify Service</AttributeValue>
+        </Attribute>
+    </IDPSSODescriptor>
+    <Organization>
+        <OrganizationName xml:lang="da">MyOrganization</OrganizationName>
+        <OrganizationDisplayName xml:lang="da">Temp org. display name</OrganizationDisplayName>
+        <OrganizationURL xml:lang="da">http://tempuri.org/</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="administrative">
+        <GivenName>John</GivenName>
+        <SurName>Doe</SurName>
+        <EmailAddress>my@email.address.org</EmailAddress>
+        <TelephoneNumber>000-TEMP</TelephoneNumber>
+    </ContactPerson>
+    <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+            Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/services/attributeservice/saml2/soap" />
+    </AttributeAuthorityDescriptor>
+</EntityDescriptor>

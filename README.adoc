@@ -490,6 +490,15 @@ Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAut
 - https://github.com/Signaturgruppen-A-S/nets-eID-broker-demo
 - https://github.com/Signaturgruppen-A-S/netseidbroker-dotnet-demo
 
+- https://broker.signaturgruppen.dk/teknisk-dokumentation/demo-projekt
+- https://pp.netseidbroker.dk/op/.well-known/openid-configuration
+- https://pp.netseidbroker.dk/op/connect/authorize?client_id=0a775a87-878c-4b83-abe3-ee29c720c3e7&redirect_uri=https://keycloak.jarry.dk:8543/realms/playground/broker/signaturgruppen-hybrid/endpoint&response_type=code&scope=openid mitid
+
+.User
+----
+Budur10132
+----
+
 .criipto
 - https://www.criipto.com/mitid/[Danish MitID]
 - https://docs.criipto.com/verify/e-ids/danish-mitid/[Danish MitID - Documentation]
@@ -497,12 +506,69 @@ Source : https://www.appsdeveloperblog.com/oauth-2-0-refresh-token-example/[OAut
 - https://docs.criipto.com/verify/integrations/aspnet-core-v6/[Integrations - ASP.NET Core 6.0]
     * https://github.com/criipto/samples/tree/master/Verify/dotnet-core-v6.x
 
+=== NSIS / NemLog-in
+
+[quote]
+En broker er en betroet tjeneste (trusted third party), der videreformidler brugerautentifikationer til andre organisationers tjenester ved at udstede egne autentifikationsbilletter, som disse tjenester stoler på. Man bliver således ikke broker ved at foretage en intern konvertering i en tjeneste af autentifikationssvaret fra NemLog-in til fx en browser cookie eller et internt access token. +
+Brokere kan tilslutte et it-system til NemLog-in og derigennem videreformidle NemLog-in autentifikationer samt erhvervsidentiteter til egne, bagvedliggende tjenesteudbydere. Herved bliver brokeren en såkaldt `sub-broker`. NemLog-in er selv en broker for MitID autentifikationer - en såkaldt MitID-broker. +
+Tilslutning af en broker til NemLog-in forudsætter blandt andet NSIS-anmeldelse af brokeren og indgåelse af en brokeraftale med Digitaliseringsstyrelsen. Dette gælder uanset om brokeren i forvejen er certificeret MitID broker.
+
+Source : https://broker.nemlog-in.dk/forside/
+
+.broker.nemlog-in.dk
+- https://broker.nemlog-in.dk/forside/[Information til brokere]
+- https://broker.nemlog-in.dk/tilslutning/[Tilslutningsforløb]
+- https://broker.nemlog-in.dk/dokumentation-og-integration/[Dokumentation og integration ]
+    * https://cms.nemlog-in.dk/media/rapjnunv/integration-with-nemlog-in-for-brokers.pdf[Integration with NemLog-in for brokers]
+- https://tu.nemlog-in.dk/oprettelse-og-administration-af-tjenester/[Oprettelse og administration af tjenester]
+
+.tu.nemlog-in.dk
+- https://tu.nemlog-in.dk/forside/[Information om NemLog-in som den offentlige broker af MitID]
+- https://tu.nemlog-in.dk/tilslutning/[Tilslutning til NemLog-in]
+
+.nemlog-in.dk
+- https://migrering.nemlog-in.dk/
+- https://migrering.nemlog-in.dk/kontakt-og-support/infovideoer-og-webinarer/[Infovideoer og webinarer]
+- https://migrering.nemlog-in.dk/nemlog-in-broker/privat-tjenesteudbyder/[Privat tjenesteudbyder]
+- https://migrering.nemlog-in.dk/nemlog-in-broker/privat-tjenesteudbyder/nsis/[Privat tjenesteudbyder - NSIS]
+    * https://digst.dk/it-loesninger/standarder/nsis/
+- https://migrering.nemlog-in.dk/nemlog-in-broker/offentlig-tjenesteudbyder/[Offentlig tjenesteudbyder]
+- https://www.nemlog-in.dk/login/om-login/[Om Login]
+- https://www.nemlog-in.dk/media/xopg0xfb/5c6d9ea3-e1a1-4f95-80be-31658bc8eb21.pdf[Tekniske krav til Brokeres anvendelse af NemLog-in3]
+
+.digst.dk
+- https://digst.dk/it-loesninger/nemlog-in/om-loesningen/
+- https://digst.dk/it-loesninger/nemlog-in/om-loesningen/aendring-i-funktionaliteter/implementeringssite/infrastrukturbeskrivelse/[Fremtidens infrastruktur for digitale identiteter i Danmark]
+    * https://digst.dk/it-loesninger/nemlog-in/om-loesningen/aendring-i-funktionaliteter/implementeringssite/infrastrukturbeskrivelse/udbuddene-kort-fortalt/[Udbuddene kort fortalt]
+    * https://digst.dk/it-loesninger/mitid/om-mitid/[Om MitID]
+    * https://digst.dk/it-loesninger/nemlog-in/om-loesningen/aendring-i-funktionaliteter/implementeringssite/infrastrukturbeskrivelse/nemlog-in3-projektet/[NemLog-in3-projektet]
+- https://digst.dk/it-loesninger/nemlog-in/om-loesningen/nyheder-om-nemlog-in/danske-virksomheder-kan-faa-mitid-erhverv-fra-oktober-2022/[Danske virksomheder kan få MitID Erhverv fra oktober 2022]
+
+[quote]
+Der er på sigt planer om, at NemLog-in kan agere som broker for lokale Identity Providers (IdP) – reguleret inden for rammerne af NSIS-standarden. Dette tænkes realiseret ved, at der åbnes for føderering mellem NemLog-in og andre IdP’er. Herved opnås på sigt mulighed for autentifikation med andet end MitID identifikationsmidler– fx elektroniske identifikationsmidler udstedt lokalt i en organisation, der har sin egen Identity Provider.
+
+Source : https://digst.dk/it-loesninger/nemlog-in/om-loesningen/aendring-i-funktionaliteter/implementeringssite/infrastrukturbeskrivelse/nemlog-in3-projektet/
+
+.mitid-erhverv.dk
+- https://www.mitid-erhverv.dk/startside/
+- https://www.mitid-erhverv.dk/avanceret/lokal-idm/[Lokal IdM - MitID Erhverv]
+- https://www.mitid-erhverv.dk/avanceret/lokal-idp/[Lokal Identity Provider (Lokal IdP)]
+
+.youtube.com
+- https://www.youtube.com/watch?v=S9BpeOmuEz4[https://www.youtube.com/watch?v=S9BpeOmuEz4]
+
+.Search on google.com
+- https://www.google.com/search?client=firefox-b-d&q=%22NemLog-in%22+%22keycloak%22["NemLog-in" "keycloak"]
+
 == Serviceplatformen
 
 .serviceplatformen.dk
 - https://www.serviceplatformen.dk/administration/help/about-login[Serviceplatformen - Om login]
 - https://github.com/Serviceplatformen/demoservice-client-java
 - https://github.com/Serviceplatformen/demoservice-client-net
+
+.digst.dk
+https://digst.dk/it-loesninger/standarder/oiosaml-profiler/[OIOSAML profiler]
 
 .digitaliseringskataloget.dk
 - https://digitaliseringskataloget.dk/l%C3%B8sninger/administrationsmodul[Fælleskommunalt Administrationsmodul]
@@ -519,12 +585,37 @@ leverandører]
  - https://github.com/digst
 
 .For SAML mapping - KeyCloak
- - https://lists.jboss.org/pipermail/keycloak-user/2017-April/010289.html
+- https://www.keycloak.org/docs/latest/server_development/#_providers
+    * https://www.keycloak.org/server/configuration-provider
+    * https://www.keycloak.org/docs/latest/server_development/#_saml_role_mappings_spi
+- https://www.keycloak.org/docs/latest/server_admin/#saml-v2-0-identity-providers
+- https://github.com/redhat-italy/keycloak-spid-provider
+- https://github.com/italia/spid-keycloak-provider
+    * https://github.com/italia/spid-keycloak-provider/wiki/Generating-SP-metadata
+    * https://github.com/hakancoruhh/keycloak-steam-openid
+    * https://www.baeldung.com/java-keycloak-custom-user-providers
+
+- https://lists.jboss.org/pipermail/keycloak-user/2017-April/010289.html
     * https://lists.jboss.org/archives/search?q=SAML+attribute+mapper+with+processing
- - https://viden.stil.dk/display/OFFSKOLELOGIN/Tilslut+tjeneste
- - https://viden.stil.dk/display/OFFSKOLELOGIN/Implementering+af+eksempel+tjeneste
- - https://docplayer.net/16926163-Oiosaml-2-0-toolkits-test-results-may-2009.html
- - https://www.samltool.com/decode.php
+- https://viden.stil.dk/display/OFFSKOLELOGIN/Tilslut+tjeneste
+- https://viden.stil.dk/display/OFFSKOLELOGIN/Implementering+af+eksempel+tjeneste
+- https://docplayer.net/16926163-Oiosaml-2-0-toolkits-test-results-may-2009.html
+- https://www.samltool.com/decode.php
+- https://www.keycloak.org/docs/latest/server_admin/#saml-v2-0-identity-providers
+
+=== stoettesystemerne.dk
+
+SAML-metadata for Context Handler nederst på siden Adgangsstyring for brugere
+- https://adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/metadata.idp
+- https://adgangsstyring.stoettesystemerne.dk/runtime/saml2/metadata.idp
+
+Metadata til nuværende version af Context Handler
+Eksternt testmiljø: https://adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2auth/metadata.idp
+Produktionsmiljø: https://adgangsstyring.stoettesystemerne.dk/runtime/saml2auth/metadata.idp
+
+Metadata til NSIS-Context Handler (kommende version i 2022)
+Eksternt testmiljø: https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2auth/metadata.idp
+Produktionsmiljø: https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2auth/metadata.idp
 
 == Keycloak and Azure AD
 
