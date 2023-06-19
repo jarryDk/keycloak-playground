@@ -79,7 +79,7 @@ Sources for quotes : https://oauth.net/2/access-tokens/[OAuth 2.0 / Access Token
 - https://fusionauth.io/learn/expert-advice/oauth/modern-guide-to-oauth[The Modern Guide to OAuth]
 - https://oauth.net/2/[OAuth 2.0]
 - https://oauth.net/2/grant-types/[OAuth 2.0 / Grant Types]
-- https://oauth.net/2/access-tokens/[OAuth 2.0 /Access Tokens]
+- https://oauth.net/2/access-tokens/[OAuth 2.0 / Access Tokens]
 - https://oauth.net/id-tokens-vs-access-tokens/[ID Tokens vs Access Tokens]
 
 
@@ -87,23 +87,21 @@ https://alexbilbie.github.io/guide-to-oauth-2-grants/#which-oauth-20-grant-shoul
 
 === auth0.com on ID Token, Access Token and Scope
 
-- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com ~ ID Tokens]
-- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com ~ Access Tokens]
-- https://auth0.com/docs/get-started/apis/scopes[auth0.com ~ Scopes]
+- https://auth0.com/docs/secure/tokens/id-tokens[auth0.com / ID Tokens]
+- https://auth0.com/docs/secure/tokens/access-tokens[auth0.com / Access Tokens]
+- https://auth0.com/docs/get-started/apis/scopes[auth0.com / Scopes]
     * https://auth0.com/docs/get-started/apis/scopes/api-scopes[API Scopes]
     * https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes[OpenID Connect Scopes]
     * https://auth0.com/docs/get-started/apis/scopes/sample-use-cases-scopes-and-claims[Sample Use Cases: Scopes and Claims]
 
 
-https://auth0.com/blog/id-token-access-token-what-is-the-difference/[auth0.com ~ ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
+https://auth0.com/blog/id-token-access-token-what-is-the-difference/[auth0.com / ID Token and Access Token: What's the Difference?] is a very nice blog post get get you head around ID Token and Access Token.
 
-https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube ~ ID Token and Access Token: What's the Difference?]
+https://www.youtube.com/watch?v=vVM1Tpu9QB4[YouTube / ID Token and Access Token: What's the Difference?]
 
 video::vVM1Tpu9QB4[youtube, width=640, height=480]
 
 image::id-token-vs-access-token.jpg[id-token-vs-access-token]
-
-
 
 == Get a Token
 
@@ -117,7 +115,9 @@ echo $access_token | jq -R 'split(".") | .[0],.[1] | @base64d | fromjson'
 
 [quote]
 The Authorization Code grant type is used by confidential and public clients to exchange an authorization code for an access token. +
+ +
 After the user returns to the client via the redirect URL, the application will get the authorization code from the URL and use it to request an access token. +
+ +
 It is recommended that all clients use the PKCE extension with this flow as well to provide better security.
 
 .Open in a Browser to do login
@@ -133,7 +133,9 @@ https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/auth
 
 NOTE: Time for some copy/paste - You need to get the `code` from the url in you browser.
 
-.Get .access_token (Authorization Code Grant)
+After doing `copy/paste` of the `code` from the browser we can get the token
+
+.Get token (Authorization Code Grant)
 [source,bash]
 ----
 curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
@@ -149,9 +151,10 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
 
 [quote]
 The Client Credentials grant type is used by clients to obtain an access token outside of the context of a user. +
+ +
 This is typically used by clients to access resources about themselves rather than to access a user's resources.
 
-.Get .access_token (Client Credentials Grant)
+.Get token (Client Credentials Grant)
 [source,bash]
 ----
 curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
@@ -162,7 +165,7 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
 	-d 'grant_type=client_credentials'
 ----
 
-.Get .access_token (Client Credentials Grant - parse client_id and client_secret as Basic access authorization)
+.Get token (Client Credentials Grant - parse client_id and client_secret as Basic access authorization)
 [source,bash]
 ----
 curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
@@ -172,7 +175,7 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
 	-d 'grant_type=client_credentials'
 ----
 
-.Get token human readable (Client Credentials Grant - parse client_id and client_secret as Basic access authorization)
+.Get human readable access_token (Client Credentials Grant - parse client_id and client_secret as Basic access authorization)
 ----
 jwt-decode $(\
     curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
@@ -182,6 +185,26 @@ jwt-decode $(\
     -d 'grant_type=client_credentials' | jq --raw-output '.access_token'\
     )
 ----
+
+=== Implicit Grant
+
+[quote]
+The Implicit flow was a simplified OAuth flow previously recommended for native apps and JavaScript apps where the access token was returned immediately without an extra authorization code exchange step. +
+ +
+*It is not recommended to use the implicit flow (and some servers prohibit this flow entirely) due to the inherent risks of returning access tokens in an HTTP redirect without any confirmation that it has been received by the client*.
+
+.Request
+[source,bash]
+----
+https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/auth?response_type=token&client_id=demo-implicit&state=foo&redirect_uri=http://localhost:8082/callback&scope=profile
+----
+
+.Response
+----
+http://localhost:8082/callback#state=foo&session_state=e07ce6ca-334c-42a2-984d-9ae213d82a8d&access_token=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJyUVFxZlQ3TVZEYTZrQUxRVVF3SjI2WlN4VzdDa05HRF9kTHJHaUdidmk0In0.eyJleHAiOjE2ODcxNTQ3MTYsImlhdCI6MTY4NzE1MzgxNiwiYXV0aF90aW1lIjoxNjg3MTUzODE2LCJqdGkiOiI5MzQ3OTViMi1mMzhjLTRlYjctYWUwZS1kZTc1OTQ0Y2FkN2QiLCJpc3MiOiJodHRwczovL2tleWNsb2FrLmphcnJ5LmRrOjg1NDMvcmVhbG1zL3BsYXlncm91bmQiLCJhdWQiOlsidG9kby1wbGF5Z3JvdW5kLWJhY2tlbmQtc2VydmljZSIsImdlb3NlcnZlci1jbGllbnQiLCJhY2NvdW50Il0sInN1YiI6IjA5NzliYmJiLTI2ZjgtNGYwMy04OTBmLTk0ZTllMzU5ODQ5YyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImRlbW8taW1wbGljaXQiLCJzZXNzaW9uX3N0YXRlIjoiZTA3Y2U2Y2EtMzM0Yy00MmEyLTk4NGQtOWFlMjEzZDgyYThkIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIvKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wbGF5Z3JvdW5kIiwib2ZmbGluZV9hY2Nlc3MiLCJhZG1pbiIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsidG9kby1wbGF5Z3JvdW5kLWJhY2tlbmQtc2VydmljZSI6eyJyb2xlcyI6WyJyZWFkOnRvZG8iLCJ3cml0ZTp0b2RvIl19LCJnZW9zZXJ2ZXItY2xpZW50Ijp7InJvbGVzIjpbIkFETUlOSVNUUkFUT1IiLCJBRE1JTiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwic2lkIjoiZTA3Y2U2Y2EtMzM0Yy00MmEyLTk4NGQtOWFlMjEzZDgyYThkIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJNaWNoYWVsIEJvcm5ob2xkdCBOaWVsc2VuIiwicHJlZmVycmVkX3VzZXJuYW1lIjoibWljYm4iLCJnaXZlbl9uYW1lIjoiTWljaGFlbCBCb3JuaG9sZHQiLCJmYW1pbHlfbmFtZSI6Ik5pZWxzZW4iLCJlbWFpbCI6Im1pY2JuQHJlZHBpbGwtbGlucHJvLmNvbSJ9.q1hZfZQ1T9ElCw6YHXJiDmS34LRlnXOhtai3IC0l7n6NZMj-hmJnClnuJupMDPv934_B8apI18cL7o0VolojDXXzuvVNWR9deBI0dQrJf0p9JVTwEY-2so736zOgvwWVVgJ1gtn3anN2Tf9Uljs3itMmb8181VevKT2edIiMxEdfU9RmFHnDJ2vuq91NWLbgS-VdxQ_cplqj-65s4pUfDJlPu0PxHL-DDqrhdjjZdLnHv80_sNUhfz31RSKzh5yX6vknJ0awXpqoIbyyZH5tCGlw-lbaw3NbHJ1xZkgjxD8OCN4ojKok5wO8EXtrXTZLU8UJkMvBzXrHiWjaJS-cPA&token_type=Bearer&expires_in=900
+----
+
+TIP: `expires_in` having the value `900` is just going with default - easy to change.
 
 === Device Authorization Grant
 
@@ -195,12 +218,6 @@ jwt-decode $(\
    printers) to obtain user authorization to access protected resources
    by using a user agent on a separate device.
 
-- http://www.keycloak.org/keycloak-community/specifications/[keycloak-community / Specifications]
-- https://github.com/keycloak/keycloak-community/blob/main/design/oauth2-device-authorization-grant.md[OAuth 2.0 Device Authorization Grant]
-- https://thomaslevesque.com/2020/03/28/using-the-oauth-2-0-device-flow-to-authenticate-users-in-desktop-apps/[Using the OAuth 2.0 device flow to authenticate users in desktop apps]
-- https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code[Microsoft identity platform and the OAuth 2.0 device authorization grant flow]
-- https://www.oauth.com/oauth2-servers/device-flow/token-request/[Token Request]
-- https://datatracker.ietf.org/doc/html/rfc8628[OAuth 2.0 Device Authorization Grant]
 
 .Request init - Client authentication on
 [source,bash]
@@ -226,7 +243,7 @@ NOTE: Scope is set to `email rl`
 }
 ----
 
-Open the content of `verification_uri_complet` or open the content of `verification_uri` and use `user_code` in a browser  - accept all. Now you can get the `Token` based on the `device_code`. 
+Open the content of `verification_uri_complet` or open the content of `verification_uri` and use `user_code` in a browser  - accept all. Now you can get the `Token` based on the `device_code`.
 
 .Request get token - Client authentication on
 [source,bash]
@@ -251,15 +268,25 @@ curl -X POST \
   "session_state": "1610f066-7211-4c54-a387-8df7e51b8b83",
   "scope": "email profile rl"
 }
-
 ----
+
+==== Links - Device Authorization Grant
+
+- http://www.keycloak.org/keycloak-community/specifications/[keycloak-community / Specifications]
+- https://github.com/keycloak/keycloak-community/blob/main/design/oauth2-device-authorization-grant.md[OAuth 2.0 Device Authorization Grant]
+- https://thomaslevesque.com/2020/03/28/using-the-oauth-2-0-device-flow-to-authenticate-users-in-desktop-apps/[Using the OAuth 2.0 device flow to authenticate users in desktop apps]
+- https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code[Microsoft identity platform and the OAuth 2.0 device authorization grant flow]
+- https://www.oauth.com/oauth2-servers/device-flow/token-request/[Token Request]
+- https://datatracker.ietf.org/doc/html/rfc8628[OAuth 2.0 Device Authorization Grant]
 
 === Password Grant
 
 [quote]
-The Password grant type is a legacy way to exchange a user's credentials for an access token. Because the client application has to collect the user's password and send it to the authorization server, *it is not recommended that this grant be used at all anymore*.
+The Password grant type is a legacy way to exchange a user's credentials for an access token. Because the client application has to collect the user's password and send it to the authorization server, *it is not recommended that this grant be used at all anymore*. +
+ + 
+This flow provides no mechanism for things like multifactor authentication or delegated accounts, so is quite limiting in practice.
 
-.Get .access_token (Password Grant - Client authentication turned off)
+.Get token (Password Grant - Client authentication turned off)
 [source,bash]
 ----
 export access_token=$(\
@@ -272,7 +299,7 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
 )
 ----
 
-.Get .access_token (Password Grant - Client authentication turned on)
+.Get the access_token (Password Grant - Client authentication turned on)
 [source,bash]
 ----
 export access_token=$(\
@@ -520,7 +547,7 @@ Source : https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/a
 - https://www.nuget.org/packages/Microsoft.IdentityModel.Protocols.OpenIdConnect#versions-body-tab
 - https://www.nuget.org/packages/Microsoft.AspNetCore.Identity/#versions-body-tab
 
-.learn.microsoft.com 
+.learn.microsoft.com
 - https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-6.0[Overview of ASP.NET Core authentication]
 - https://learn.microsoft.com/en-us/aspnet/core/security/authentication/claims?view=aspnetcore-6.0[Mapping, customizing, and transforming claims in ASP.NET Core]
 
@@ -566,3 +593,8 @@ In Visual Studio Code
     * https://github.com/procodeguide/Samples.Identity.Claims[Samples.Identity.Claims]
 - https://stackoverflow.com/questions/53702555/cant-access-roles-in-jwt-token-net-core[Can't access Roles in JWT Token .NET Core]
 - https://usmanshahid.medium.com/levels-of-access-control-through-keycloak-part-3-access-control-through-roles-and-tokens-a1744c04895e[Levels of Access Control through Keycloak Part 3: Access Control Through Roles and Tokens]
+
+== GeoServer
+
+- https://geoserver.org/download/[Downloads]
+- https://docs.geoserver.org/latest/en/user/community/keycloak/index.html[Keycloak extension]
