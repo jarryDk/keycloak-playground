@@ -1,0 +1,45 @@
+{
+    "id": "c7664b73-a12a-4248-b1a3-0d3f1c260c9b",
+    "name": "KC",
+    "displayName": "KC",
+    "type": "KeyCloak",
+    "description": "Keycloak",
+    "wellKnownEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/.well-known/openid-configuration",
+    "introspectionEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token/introspect",
+    "clientRegistrationEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/openid-connect",
+    "tokenEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token",
+    "displayTokenEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token",
+    "revokeEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/revoke",
+    "displayRevokeEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/revoke",
+    "userInfoEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/userinfo",
+    "authorizeEndpoint": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/auth",
+    "endpoints": [],
+    "certificates": {
+        "type": "JWKS",
+        "value": "https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/certs"
+    },
+    "issuer": "https://keycloak.jarry.dk:8543/realms/playground",
+    "alias": null,
+    "scopeManagementEndpoint": "-",
+    "availableGrantTypes": [
+        "authorization_code",
+        "refresh_token"
+    ],
+    "enableTokenGeneration": true,
+    "enableTokenEncryption": false,
+    "enableTokenHashing": false,
+    "enableMapOAuthConsumerApps": false,
+    "enableOAuthAppCreation": true,
+    "enableSelfValidationJWT": true,
+    "claimMapping": [],
+    "consumerKeyClaim": null,
+    "scopesClaim": null,
+    "tokenValidation": [],
+    "enabled": true,
+    "additionalProperties": {
+        "client_id": "wso2apim",
+        "self_validate_jwt": true,
+        "client_secret": "*****"
+    },
+    "tokenType": "DIRECT"
+}

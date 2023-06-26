@@ -52,6 +52,11 @@ cd containers
 podman start keycloak-playground
 ----
 
+== Caches
+
+- https://www.keycloak.org/server/caching[Configuring distributed caches]
+- https://keycloak.discourse.group/t/persist-infinispan-cache/16699[Persist Infinispan Cache]
+
 == Intro to OAuth / OpenID Connect
 
 .Access Tokens
@@ -339,6 +344,76 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
   "scope": "email profile"
 }
 ----
+
+=== Client Registration
+
+[quote]
+In order for an application or service to utilize Keycloak it has to register a client in Keycloak. An admin can do this through the admin console (or admin REST endpoints), but clients can also register themselves through the Keycloak client registration service. +
+ +
+The Client Registration Service provides built-in support for Keycloak Client Representations, OpenID Connect Client Meta Data and SAML Entity Descriptors. The Client Registration Service endpoint is `/realms/<realm>/clients-registrations/<provider>`.
+
+
+Source:  https://www.keycloak.org/docs/latest/securing_apps/#_client_registration
+
+.Request
+[source,bash]
+----
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default \
+    -d '{ "clientId": "wso2apim_uniq_id" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: $access_token"
+----
+
+.Response
+[source,json]
+----
+{
+  "id": "7e50b087-9045-4531-95ad-6999dae944cb",
+  "clientId": "wso2apim_uniq_id",
+  "surrogateAuthRequired": false,
+  "enabled": true,
+  "alwaysDisplayInConsole": false,
+  "clientAuthenticatorType": "client-secret",
+  "secret": "1FPg1SDOIK0MKzP5WzBoH9RmsT7nw7Ad",
+  "registrationAccessToken": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJiZTZmOTJhYS01Y2EwLTQzMjEtYTE0NS0wNjJjYjFhZTQxYzIifQ.eyJleHAiOjAsImlhdCI6MTY4NzQxNzgzOCwianRpIjoiNDBiOTAyMTctMWVhOC00NmEzLTg1OWYtNDU5MTE0NWRlNzcyIiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5qYXJyeS5kazo4NTQzL3JlYWxtcy9wbGF5Z3JvdW5kIiwiYXVkIjoiaHR0cHM6Ly9rZXljbG9hay5qYXJyeS5kazo4NTQzL3JlYWxtcy9wbGF5Z3JvdW5kIiwidHlwIjoiUmVnaXN0cmF0aW9uQWNjZXNzVG9rZW4iLCJyZWdpc3RyYXRpb25fYXV0aCI6ImFub255bW91cyJ9.GRbi1WzKdVM9FlA7d3I_DA639BVOjY1Es4alBMYkDYo",
+  "defaultRoles": [],
+  "redirectUris": [],
+  "webOrigins": [],
+  "notBefore": 0,
+  "bearerOnly": false,
+  "consentRequired": true,
+  "standardFlowEnabled": true,
+  "implicitFlowEnabled": false,
+  "directAccessGrantsEnabled": false,
+  "serviceAccountsEnabled": false,
+  "publicClient": false,
+  "frontchannelLogout": false,
+  "protocol": "openid-connect",
+  "attributes": {
+    "client.secret.creation.time": "1687417838"
+  },
+  "authenticationFlowBindingOverrides": {},
+  "fullScopeAllowed": false,
+  "nodeReRegistrationTimeout": -1,
+  "defaultClientScopes": [
+    "web-origins",
+    "acr",
+    "profile",
+    "roles",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ]
+}
+----
+
+.Links
+- https://www.keycloak.org/docs/latest/securing_apps/#_client_registration
+- https://wjw465150.gitbooks.io/keycloak-documentation/content/securing_apps/topics/client-registration.html
 
 == Grant types (appsdeveloperblog.com)
 

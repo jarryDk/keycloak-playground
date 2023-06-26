@@ -1,0 +1,60 @@
+export access_token=$(\
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+    --user wso2apim:UumLCqx709dnv3PodCorRMgDAnzCN5Li \
+    -H 'content-type: application/x-www-form-urlencoded' \
+    -d 'username=keycloakuser&password=keycloakuser&grant_type=password' | jq --raw-output '.access_token' \
+)
+
+echo $access_token
+
+jwt-decode $access_token
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default \
+    -d '{ "clientId": "wso2apim" }' \
+    -d '{ "client_secret":"UumLCqx709dnv3PodCorRMgDAnzCN5Li" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: bearer $access_token"
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default \
+    -d '{ "clientId": "wso2apim_tmp3" }' \
+    -d '{ "client_secret":"wso2apim_tmp3_sescret" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: $access_token"
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/openid-connect \
+    -d '{ "clientId": "wso2apim_tmp17" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: $access_token"
+
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/openid-connect \
+    -d '{ "clientId": "wso2apim" }' \
+    -d '{ "client_secret":"UumLCqx709dnv3PodCorRMgDAnzCN5Li" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: bearer $access_token"
+
+----
+export access_token=$(\
+    curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-connect/token \
+    --user wso2apim:UumLCqx709dnv3PodCorRMgDAnzCN5Li \
+    -H 'content-type: application/x-www-form-urlencoded' \
+    -d 'username=keycloakuser&password=keycloakuser&grant_type=password' | jq --raw-output '.access_token' \
+)
+
+echo $access_token
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default \
+     -d '{ "clientId": "wso2apim_tmp17" }' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: bearer $access_token"
+----
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default     \
+    -d '{ "clientId": "wso2apim_tmp5" }'   \
+    -H "Content-Type:application/json"     \
+    -H "Authorization: $access_token"
+
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default     \
+    -d @foo2.json   \
+    -H "Content-Type:application/json"     \
+    -H "Authorization: $access_token"

@@ -4,6 +4,9 @@ FROM quay.io/keycloak/keycloak:latest as builder
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 
+# To explicitly enable distributed infinispan caching
+ENV KC_CACHE=ispn
+
 # Configure a database vendor
 ENV KC_DB=postgres
 

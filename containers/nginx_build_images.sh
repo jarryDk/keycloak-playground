@@ -31,8 +31,7 @@ printf "\033[32mGet certs from secure place\033[39m\n"
 get-certs
 
 printf "\n\033[32mBuild image\033[39m\n"
-podman build . -t jarrydk/keycloak
+podman build . -f nginx-Dockerfile -t jarrydk/keycloak-nginx
 
 printf "\n\033[32mRemove certs from insecure place\033[39m\n"
 trap house-keeping-certs EXIT
-
