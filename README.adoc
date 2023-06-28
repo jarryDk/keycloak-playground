@@ -300,7 +300,7 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/protocol/openid-co
 	-d 'password=change_me' \
 	-d 'username=micbn' \
 	-d 'client_id=demo-password-grant' \
-	-d 'grant_type=password'
+	-d 'grant_type=password' | jq --raw-output '.access_token'
 )
 ----
 
@@ -352,10 +352,9 @@ In order for an application or service to utilize Keycloak it has to register a 
  +
 The Client Registration Service provides built-in support for Keycloak Client Representations, OpenID Connect Client Meta Data and SAML Entity Descriptors. The Client Registration Service endpoint is `/realms/<realm>/clients-registrations/<provider>`.
 
-
 Source:  https://www.keycloak.org/docs/latest/securing_apps/#_client_registration
 
-.Request
+.Request (default)
 [source,bash]
 ----
 curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/default \
@@ -364,7 +363,7 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrati
     -H "Authorization: $access_token"
 ----
 
-.Response
+.Response (default)
 [source,json]
 ----
 {
@@ -410,6 +409,57 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrati
   ]
 }
 ----
+
+
+.Request (openid-connect)
+[source,bash]
+----
+curl -X POST https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/openid-connect \
+   -d '{"client_name":"Dyn-Open-Connect-001","redirect_uris":["https://localhost"],"token_endpoint_auth_method":"client_secret_basic","grant_types":["implicit","refresh_token","authorization_code"],"response_types":[],"subject_type":"public","tls_client_certificate_bound_access_tokens":false}' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: $access_token"
+----
+
+.Response (openid-connect)
+[source,json]
+----
+{
+  "redirect_uris": [
+    "https://localhost"
+  ],
+  "token_endpoint_auth_method": "client_secret_basic",
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "response_types": [
+    "code",
+    "none"
+  ],
+  "client_id": "045b2cf5-58ab-4ce9-8f0e-08180d107b08",
+  "client_secret": "h27rAesHZJ6NeyhDubMjjRulS2yp5YK1",
+  "client_name": "Dyn-Open-Connect-001",
+  "scope": "address phone offline_access microprofile-jwt",
+  "subject_type": "public",
+  "request_uris": [],
+  "tls_client_certificate_bound_access_tokens": false,
+  "post_logout_redirect_uris": [
+    "https://localhost"
+  ],
+  "client_id_issued_at": 1687955701,
+  "client_secret_expires_at": 0,
+  "registration_client_uri": "https://keycloak.jarry.dk:8543/realms/playground/clients-registrations/openid-connect/045b2cf5-58ab-4ce9-8f0e-08180d107b08",
+  "registration_access_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJiZTZmOTJhYS01Y2EwLTQzMjEtYTE0NS0wNjJjYjFhZTQxYzIifQ.eyJleHAiOjAsImlhdCI6MTY4Nzk1NTcwMSwianRpIjoiOWJkNTA0NzgtM2E4Zi00MGU2LThjNjctNjFiYjY5Y2NhMTk0IiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5qYXJyeS5kazo4NTQzL3JlYWxtcy9wbGF5Z3JvdW5kIiwiYXVkIjoiaHR0cHM6Ly9rZXljbG9hay5qYXJyeS5kazo4NTQzL3JlYWxtcy9wbGF5Z3JvdW5kIiwidHlwIjoiUmVnaXN0cmF0aW9uQWNjZXNzVG9rZW4iLCJyZWdpc3RyYXRpb25fYXV0aCI6ImFub255bW91cyJ9.XlHxtaCGy5p4EpUuD1LP2pnQvgRqdlXxwY93QhiEGls",
+  "backchannel_logout_session_required": false,
+  "require_pushed_authorization_requests": false,
+  "frontchannel_logout_session_required": false
+}
+----
+
+.FAQ
+If you get a `error_description` like `Policy 'Trusted Hosts' rejected request to client-registration service. Details: Host not trusted.` you 
+can add the ip via https://keycloak.jarry.dk:8543/admin/master/console/#/playground/clients/client-registration/anonymous
+
 
 .Links
 - https://www.keycloak.org/docs/latest/securing_apps/#_client_registration
